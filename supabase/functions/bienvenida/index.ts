@@ -4,7 +4,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY") ?? "";
-const BREVO_LIST_ID = Number(Deno.env.get("BREVO_LIST_ID") ?? "0");
+const BREVO_LIST_ID = Number(Deno.env.get("BREVO_LIST_ID") ?? "3");
 const SENDER_EMAIL = Deno.env.get("SENDER_EMAIL") ?? "";
 const SENDER_NAME = Deno.env.get("SENDER_NAME") ?? "Daniel Palacio P. · Volver a sumar";
 const SITE = Deno.env.get("SITE_URL") ?? "https://volver-a-sumar.vercel.app";
