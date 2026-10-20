@@ -1,6 +1,6 @@
-# Volver a sumar · Landing de prelanzamiento
+# Volver a sumar · Registro de elegibilidad
 
-Página de registro para recibir la primicia del ebook *Volver a sumar*, de Daniel Palacio.
+Registro de elegibilidad: quien se inscribe recibe el Capítulo 1 y el precio de lanzamiento del ebook *Volver a sumar*, de Daniel Palacio.
 
 ## Cómo está armada
 

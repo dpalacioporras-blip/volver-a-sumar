@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Volver a sumar · Prelanzamiento del ebook de Daniel Palacio P.</title>
-<meta name="description" content="La humanidad ha tomado una decisión. Regístrate y recibe la primicia de Volver a sumar, de Daniel Palacio P., antes de que salga a la venta.">
+<title>Registro de elegibilidad · Volver a sumar, de Daniel Palacio P.</title>
+<meta name="description" content="La humanidad ha tomado una decisión. Inscríbete en el registro de elegibilidad y recibe el Capítulo 1 de Volver a sumar, de Daniel Palacio P., y el precio de lanzamiento.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://volver-a-sumar.vercel.app/">
-<meta property="og:title" content="Volver a sumar · Sé de los primeros en conocerla">
-<meta property="og:description" content="No fue una guerra. No fue una epidemia. Fue una elección. Regístrate y recibe la primicia del libro.">
+<meta property="og:title" content="Registro de elegibilidad · Volver a sumar">
+<meta property="og:description" content="No fue una guerra. No fue una epidemia. Fue una elección. Inscríbete y recibe el Capítulo 1 y el precio de lanzamiento.">
 <meta property="og:image" content="https://volver-a-sumar.vercel.app/portada-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -66,6 +66,8 @@ button[disabled]{opacity:.6;cursor:wait}
 .note{font-size:14px;color:var(--muted)}
 .error{font-size:15px;color:#FFB4A8}
 .done{display:flex;flex-direction:column;gap:12px}
+.card-head{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.card-head .display{font-size:18px;line-height:1.2}
 .done .display{font-size:26px;line-height:1.1;color:var(--sprout)}
 
 .cover{flex:1 1 320px;display:flex;justify-content:center}
@@ -77,7 +79,8 @@ h2{margin:0;font-size:clamp(26px,3.6vw,42px);line-height:1.1}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
 .benefit{padding-top:20px;display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--warm)}
 .benefit:nth-child(2){border-top-color:var(--text)}
-.benefit:nth-child(3){border-top-color:var(--cool)}
+.bonus{display:flex;flex-direction:column;gap:10px;padding:26px 28px;border:1px solid rgba(79,163,199,.4);border-top:3px solid var(--cool);border-radius:6px;background:var(--panel)}
+.bonus h3{margin:0;font-size:21px;font-weight:600}
 .benefit .num{font-family:'Saira',sans-serif;font-weight:500;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .benefit h3{margin:0;font-size:21px;font-weight:600}
 
@@ -104,7 +107,7 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <div class="top-hero">
 <header class="top wrap">
 <div class="brand">Volver a <b>Sumar</b></div>
-<div class="label cool">Prelanzamiento · 2026</div>
+<div class="label cool">Registro de elegibilidad</div>
 </header>
 
 <main>
@@ -115,10 +118,11 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <span class="n1" id="n1">412.300</span><span class="arrow">→</span><span class="n2" id="n2">412.299</span><span class="arrow">→</span><span class="n3" id="n3">412.298</span>
 </div>
 <h1 class="display">La humanidad ha tomado una decisión. <span class="warm">Sé de los primeros en conocerla.</span></h1>
-<p class="lead soft">Regístrate y recibe la primicia de Volver a sumar antes de que salga a la venta. Te escribimos solo cuando haya noticias del lanzamiento.</p>
+<p class="lead soft">Inscríbete en el registro de elegibilidad y recibe el Capítulo 1 de Volver a sumar y el precio de lanzamiento de la novela.</p>
 
 <div id="registro" class="card">
 <form id="form-registro" novalidate>
+<div class="card-head"><div class="display">Registro de elegibilidad</div><p class="note">Completa tus datos para quedar inscrito.</p></div>
 <div class="field">
 <label for="f-nombre">Nombre</label>
 <input id="f-nombre" name="nombre" type="text" required maxlength="100" autocomplete="given-name" placeholder="Tu nombre">
@@ -140,8 +144,8 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <p class="note">Sin spam. Puedes darte de baja cuando quieras.</p>
 </form>
 <div id="f-listo" class="done" role="status" hidden tabindex="-1">
-<div class="display">Estás en la lista.</div>
-<p class="soft">Te escribiremos en cuanto el libro esté listo. Revisa también tu carpeta de spam por si acaso.</p>
+<div class="display">Registro completado. Eres elegible.</div>
+<p class="soft">Te enviaremos el Capítulo 1 y el precio de lanzamiento a este correo. Revisa también tu carpeta de spam por si acaso.</p>
 </div>
 </div>
 </div>
@@ -155,23 +159,23 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 
 <section class="band">
 <div class="wrap">
-<h2 class="display">Qué recibes al registrarte</h2>
+<h2 class="display">Qué recibes con tu registro</h2>
 <div class="grid">
 <div class="benefit">
 <div class="num">01</div>
-<h3>El aviso antes que nadie</h3>
-<p class="soft">Te enteras del día y la hora del lanzamiento antes de que se anuncie públicamente y tienes un descuento exclusivo.</p>
+<h3>El Capítulo 1 de la novela</h3>
+<p class="soft">Empieza a leer Volver a sumar antes de que salga a la venta. Llega directo a tu correo.</p>
 </div>
 <div class="benefit">
 <div class="num">02</div>
-<h3>Un adelanto del libro</h3>
-<p class="soft">El primer capítulo en tu correo antes del lanzamiento.</p>
+<h3>Precio de lanzamiento</h3>
+<p class="soft">Un precio especial para quienes están en el registro, el día que la novela salga a la venta.</p>
 </div>
-<div class="benefit">
-<div class="num">03</div>
-<h3>El cómic de La Decisión</h3>
-<p class="soft">Una historia gráfica basada en uno de los capítulos de Volver a sumar.</p>
 </div>
+<div class="bonus">
+<div class="label cool">Con la compra de la novela</div>
+<h3>El cómic La Decisión, gratis</h3>
+<p class="soft">Una historia gráfica basada en uno de los capítulos de Volver a sumar. Llega con tu compra de la novela.</p>
 </div>
 </div>
 </section>
