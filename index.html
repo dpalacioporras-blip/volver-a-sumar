@@ -3,86 +3,118 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Volver a sumar · Prelanzamiento del ebook de Daniel Palacio</title>
-<meta name="description" content="La humanidad ha tomado una decisión. Regístrate y recibe la primicia de Volver a sumar antes de que salga a la venta.">
+<title>Volver a sumar · Prelanzamiento del ebook de Daniel Palacio P.</title>
+<meta name="description" content="La humanidad ha tomado una decisión. Regístrate y recibe la primicia de Volver a sumar, de Daniel Palacio P., antes de que salga a la venta.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://volver-a-sumar.vercel.app/">
 <meta property="og:title" content="Volver a sumar · Sé de los primeros en conocerla">
 <meta property="og:description" content="No fue una guerra. No fue una epidemia. Fue una elección. Regístrate y recibe la primicia del libro.">
-<meta property="og:image" content="https://volver-a-sumar.vercel.app/portada.webp">
+<meta property="og:image" content="https://volver-a-sumar.vercel.app/portada-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0E0F0D">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E0F0D'/%3E%3Ccircle cx='16' cy='16' r='10' fill='%23FAC800'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#1F2235">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231F2235'/%3E%3Cpath d='M16 6a10 10 0 0 0 0 20z' fill='%23E0806C'/%3E%3Cpath d='M16 6a10 10 0 0 1 0 20z' fill='%234FA3C7'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Saira:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-:root{--bg:#0E0F0D;--panel:#171916;--band:#131512;--line:#2C2F29;--field:#4A4E44;--text:#E9E6DC;--soft:#C9C6BA;--muted:#A3A092;--accent:#FAC800}
+:root{
+  --bg:#1F2235;--panel:#282C44;--band:#23263B;--line:#3A3F5C;--field:#565C7E;
+  --text:#F1ECE2;--soft:#D3D1D9;--muted:#A9AEC4;
+  --warm:#E0806C;--cool:#4FA3C7;--sprout:#7FC4B4;
+}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:17px;line-height:1.55}
-a{color:var(--text)}a:hover{color:#fff}
-:focus-visible{outline:3px solid var(--text);outline-offset:2px}
-.wrap{max-width:1200px;margin:0 auto;padding-left:24px;padding-right:24px}
-.display{font-family:'Big Shoulders Display',sans-serif;font-weight:800;text-transform:uppercase}
-.mono{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
-.muted{color:var(--muted)}.soft{color:var(--soft)}.accent{color:var(--accent)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:17px;line-height:1.6}
+a{color:var(--cool)}a:hover{color:var(--text)}
+:focus-visible{outline:3px solid var(--text);outline-offset:3px}
 p{margin:0}
-header.top{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:24px;padding-bottom:24px;border-bottom:1px solid var(--line)}
-header.top .brand{font-size:26px;letter-spacing:.04em}
-.hero{display:flex;flex-wrap:wrap;gap:64px;align-items:center;padding-top:72px;padding-bottom:88px}
-.hero-text{flex:999 1 460px;min-width:0;display:flex;flex-direction:column;gap:28px}
-h1{margin:0;font-size:clamp(48px,8vw,104px);line-height:.95;letter-spacing:.01em}
+.wrap{max-width:1200px;margin:0 auto;padding-left:24px;padding-right:24px}
+.display{font-family:'Unbounded',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-.01em}
+.label{font-family:'Saira',sans-serif;font-weight:500;font-size:13px;letter-spacing:.32em;text-transform:uppercase}
+.muted{color:var(--muted)}.soft{color:var(--soft)}.warm{color:var(--warm)}.cool{color:var(--cool)}
+
+/* Encabezado + hero: la portada partida en dos, cálido a la izquierda y frío a la derecha */
+.top-hero{background:
+  linear-gradient(90deg,rgba(172,80,82,.30) 0%,rgba(31,34,53,0) 42%,rgba(31,34,53,0) 58%,rgba(45,120,150,.32) 100%),
+  linear-gradient(180deg,rgba(31,34,53,0) 60%,var(--bg) 100%),var(--bg)}
+header.top{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:24px;padding-bottom:24px;border-bottom:1px solid rgba(241,236,226,.12)}
+header.top .brand{font-family:'Saira',sans-serif;font-weight:600;font-size:15px;letter-spacing:.42em;text-transform:uppercase}
+header.top .brand b{font-family:'Unbounded',sans-serif;font-weight:800;letter-spacing:.02em;font-size:20px;margin-left:.2em}
+
+.hero{display:flex;flex-wrap:wrap;gap:64px;align-items:center;padding-top:64px;padding-bottom:96px}
+.hero-text{flex:999 1 460px;min-width:0;display:flex;flex-direction:column;gap:26px}
+.countdown{font-family:'Saira',sans-serif;font-weight:500;font-size:clamp(18px,2.4vw,26px);letter-spacing:.06em;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;align-items:center;gap:.5em}
+.countdown .arrow{color:var(--muted);font-weight:400}
+.countdown .n1{color:var(--warm)}.countdown .n2{color:var(--text)}.countdown .n3{color:var(--cool)}
+h1{margin:0;font-size:clamp(34px,5.2vw,64px);line-height:1.04}
 .lead{max-width:560px;font-size:19px}
-.card{max-width:560px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:28px}
+
+.card{max-width:560px;background:rgba(40,44,68,.85);border:1px solid var(--line);border-radius:6px;padding:28px}
 form{display:flex;flex-direction:column;gap:18px;margin:0}
 .field{display:flex;flex-direction:column;gap:8px}
-.field label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-input[type=text],input[type=email]{height:52px;padding:0 16px;background:var(--bg);color:var(--text);border:1px solid var(--field);border-radius:3px;font:inherit;font-size:17px;width:100%}
-input::placeholder{color:#7F7C70}
+.field label{font-family:'Saira',sans-serif;font-weight:500;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=email]{height:52px;padding:0 16px;background:var(--bg);color:var(--text);border:1px solid var(--field);border-radius:4px;font:inherit;font-size:17px;width:100%}
+input::placeholder{color:#7E839C}
 .check{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--soft);line-height:1.45}
-.check input{width:22px;height:22px;margin:0;flex:none;accent-color:var(--accent)}
+.check input{width:22px;height:22px;margin:0;flex:none;accent-color:var(--warm)}
 .hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
-button{height:56px;border:0;border-radius:3px;background:var(--accent);color:var(--bg);font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+button{height:56px;border:0;border-radius:4px;background:var(--warm);color:var(--bg);font-family:'Unbounded',sans-serif;font-weight:800;font-size:16px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+button:hover{background:#E8927F}
 button[disabled]{opacity:.6;cursor:wait}
 .note{font-size:14px;color:var(--muted)}
 .error{font-size:15px;color:#FFB4A8}
 .done{display:flex;flex-direction:column;gap:12px}
-.done .display{font-size:36px;line-height:1}
+.done .display{font-size:26px;line-height:1.1;color:var(--sprout)}
+
 .cover{flex:1 1 320px;display:flex;justify-content:center}
-.cover img{display:block;width:100%;max-width:400px;height:auto;aspect-ratio:2/3;border-radius:4px;box-shadow:18px 18px 0 #050605}
+.cover img{display:block;width:100%;max-width:400px;height:auto;aspect-ratio:1010/1600;border-radius:6px;box-shadow:0 30px 80px rgba(8,10,20,.6),0 0 0 1px rgba(241,236,226,.08)}
+
 .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--band)}
 .band .wrap{padding-top:80px;padding-bottom:80px;display:flex;flex-direction:column;gap:40px}
-h2{margin:0;font-size:clamp(36px,5vw,56px);line-height:1}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
-.benefit{border-top:3px solid var(--accent);padding-top:20px;display:flex;flex-direction:column;gap:10px}
-.benefit h3{margin:0;font-size:22px;font-weight:600}
+h2{margin:0;font-size:clamp(26px,3.6vw,42px);line-height:1.1}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+.benefit{padding-top:20px;display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--warm)}
+.benefit:nth-child(2){border-top-color:var(--text)}
+.benefit:nth-child(3){border-top-color:var(--cool)}
+.benefit .num{font-family:'Saira',sans-serif;font-weight:500;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.benefit h3{margin:0;font-size:21px;font-weight:600}
+
 .story{display:flex;flex-wrap:wrap;gap:56px;padding-top:88px;padding-bottom:88px}
 .story-text{flex:999 1 460px;min-width:0;display:flex;flex-direction:column;gap:20px}
 .story-text .soft{max-width:640px;display:flex;flex-direction:column;gap:12px}
-.author{flex:1 1 300px;align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:28px;display:flex;flex-direction:column;gap:14px}
+.author{flex:1 1 300px;align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:28px;display:flex;flex-direction:column;gap:14px}
 .author .name{font-size:22px;font-weight:600}
-.cta{background:var(--accent);color:var(--bg)}
+
+.cta{background:linear-gradient(90deg,var(--warm) 0%,#C9A2A2 50%,var(--cool) 100%);color:var(--bg)}
 .cta .wrap{padding-top:72px;padding-bottom:72px;display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between}
-.cta h2{flex:999 1 420px;font-size:clamp(40px,6vw,72px);line-height:.95}
-.cta a{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 36px;background:var(--bg);color:var(--text);border-radius:3px;text-decoration:none;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+.cta h2{flex:999 1 420px;font-size:clamp(28px,4.4vw,52px);line-height:1.05}
+.cta a{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 32px;background:var(--bg);color:var(--text);border-radius:4px;text-decoration:none;font-family:'Unbounded',sans-serif;font-weight:800;font-size:16px;letter-spacing:.04em;text-transform:uppercase}
+.cta a:hover{background:#2B2F4A;color:var(--text)}
 .cta a:focus-visible{outline-color:var(--bg)}
+
 footer{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding-top:32px;padding-bottom:32px;font-size:14px;color:var(--muted)}
-footer a{color:var(--muted)}
+footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 
+<div class="top-hero">
 <header class="top wrap">
-<div class="display brand">Volver a sumar</div>
-<div class="mono accent">Prelanzamiento · 2026</div>
+<div class="brand">Volver a <b>Sumar</b></div>
+<div class="label cool">Prelanzamiento · 2026</div>
 </header>
 
 <main>
 <section class="hero wrap">
 <div class="hero-text">
-<div class="mono muted">De la mente de Daniel Palacio · Ebook</div>
-<h1 class="display">La humanidad ha tomado una decisión. <span class="accent">Sé de los primeros en conocerla.</span></h1>
+<div class="label muted">De la mente de Daniel Palacio P. · Ebook</div>
+<div class="countdown" aria-hidden="true">
+<span class="n1" id="n1">412.300</span><span class="arrow">→</span><span class="n2" id="n2">412.299</span><span class="arrow">→</span><span class="n3" id="n3">412.298</span>
+</div>
+<h1 class="display">La humanidad ha tomado una decisión. <span class="warm">Sé de los primeros en conocerla.</span></h1>
 <p class="lead soft">Regístrate y recibe la primicia de Volver a sumar antes de que salga a la venta. Te escribimos solo cuando haya noticias del lanzamiento.</p>
 
 <div id="registro" class="card">
@@ -108,33 +140,35 @@ footer a{color:var(--muted)}
 <p class="note">Sin spam. Puedes darte de baja cuando quieras.</p>
 </form>
 <div id="f-listo" class="done" role="status" hidden tabindex="-1">
-<div class="display accent">Estás en la lista.</div>
+<div class="display">Estás en la lista.</div>
 <p class="soft">Te escribiremos en cuanto el libro esté listo. Revisa también tu carpeta de spam por si acaso.</p>
 </div>
 </div>
 </div>
 
 <div class="cover">
-<img src="/portada.webp" width="560" height="840" alt="Portada de Volver a sumar: una niña de espaldas frente a un sol amarillo, sobre un suelo que se agrieta">
+<img src="/portada.webp" width="800" height="1267" alt="Portada de Volver a sumar, de Daniel Palacio P.: un hombre y una mujer de espaldas, uno en tonos rojos y otra en azules, con un brote que nace entre ambos">
 </div>
 </section>
+</main>
+</div>
 
 <section class="band">
 <div class="wrap">
 <h2 class="display">Qué recibes al registrarte</h2>
 <div class="grid">
 <div class="benefit">
-<div class="mono muted" style="letter-spacing:0">01</div>
+<div class="num">01</div>
 <h3>El aviso antes que nadie</h3>
 <p class="soft">Te enteras del día y la hora del lanzamiento antes de que se anuncie públicamente y tienes un descuento exclusivo.</p>
 </div>
 <div class="benefit">
-<div class="mono muted" style="letter-spacing:0">02</div>
+<div class="num">02</div>
 <h3>Un adelanto del libro</h3>
 <p class="soft">El primer capítulo en tu correo antes del lanzamiento.</p>
 </div>
 <div class="benefit">
-<div class="mono muted" style="letter-spacing:0">03</div>
+<div class="num">03</div>
 <h3>El cómic de La Decisión</h3>
 <p class="soft">Una historia gráfica basada en uno de los capítulos de Volver a sumar.</p>
 </div>
@@ -144,7 +178,7 @@ footer a{color:var(--muted)}
 
 <section class="story wrap">
 <div class="story-text">
-<div class="mono accent">La historia</div>
+<div class="label cool">La historia</div>
 <h2 class="display">No fue una guerra. No fue una epidemia. Fue una elección.</h2>
 <div class="soft">
 <p>Ahora quedan menos de medio millón de personas y el mundo se prepara para su final. Pero cuando una civilización decide que su tiempo se ha acabado, alguien tiene que responder una pregunta:</p>
@@ -152,8 +186,8 @@ footer a{color:var(--muted)}
 </div>
 </div>
 <div class="author">
-<div class="mono muted">Sobre el autor</div>
-<div class="name">Daniel Palacio</div>
+<div class="label muted">Sobre el autor</div>
+<div class="name">Daniel Palacio P.</div>
 <p class="soft">Comunicador, comediante y podcaster, pero sobre todo un creativo entusiasta de hacer de cada idea un viaje.</p>
 </div>
 </section>
@@ -164,14 +198,26 @@ footer a{color:var(--muted)}
 <a href="#registro">Registrarme ahora</a>
 </div>
 </section>
-</main>
 
 <footer class="wrap">
-<div>© 2026 Daniel Palacio. Todos los derechos reservados.</div>
+<div>© 2026 Daniel Palacio P. Todos los derechos reservados.</div>
 <div><a href="mailto:tvpandemonium@gmail.com">tvpandemonium@gmail.com</a> · <a href="/privacidad">Política de privacidad</a></div>
 </footer>
 
 <script>
+// Cuenta regresiva: la población baja de a uno mientras la persona está en la página.
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+  var n = 412300;
+  var el = [document.getElementById('n1'), document.getElementById('n2'), document.getElementById('n3')];
+  function fmt(x) { return x.toLocaleString('es-CO').replace(/,/g, '.'); }
+  setInterval(function () {
+    n -= 1;
+    for (var i = 0; i < 3; i++) el[i].textContent = fmt(n - i);
+  }, 2600);
+})();
+
 (function () {
   var SUPABASE_URL = 'https://jcsdruohnwkfsonesonx.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_RKLDH78cwbcTf1y0OD80WQ_kTW1cRIR';
