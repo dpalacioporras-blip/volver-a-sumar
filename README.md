@@ -33,3 +33,39 @@ Para exportar: botón **Export → CSV** en el Table Editor.
   para no enviar dos veces.
 - Configuración (secretos de la función en Supabase): `BREVO_API_KEY`, `BREVO_LIST_ID`, `SENDER_EMAIL`,
   y opcionales `SENDER_NAME` y `SITE_URL`.
+
+## Segunda entrega: formulario T-14 (`/t14`)
+
+Juego de asignación a un Centro de Reunión. Cada persona inscrita tiene un enlace personal
+(`/t14?t=<token>`), llena 14 preguntas y recibe una credencial para historias (o una constancia de
+"no asignado"). La solicitud se radica una sola vez.
+
+- `t14/index.html`: la página (acceso, aviso, preguntas, revisión y firma, resultado).
+- `t14/datos.js`: preguntas, países → Centros, oficios → funciones y sectores, reglas y textos. **Es la única
+  fuente de las reglas.** Si lo cambias, copia el archivo a `supabase/functions/t14/datos.js` y vuelve a publicar la función.
+- `t14/credencial.js`: dibuja la credencial de 1080×1920 en el navegador.
+- `t14/og.jpg`: vista previa del enlace en redes.
+- `supabase/functions/t14/`: función `t14` (sin verificación JWT; el token del enlace es la llave). Acciones:
+  `estado`, `radicar`, `enlace` (inscribe o reenvía el enlace por correo) y, con clave de administración,
+  `anunciar` y `sincronizar`.
+- `supabase/migrations/20261023_t14.sql`: columna `token` en `registros`, tabla `asignaciones`, tabla privada
+  `t14_config` (guarda la clave `admin_key`, que no está en el repositorio) y la función `t14_admin`.
+
+Los resultados quedan en Supabase → tabla `asignaciones` y en Brevo como atributos del contacto:
+`T14_ENLACE`, `T14_CATEGORIA` (A, B o LISTA DE ESPERA), `T14_CENTRO`, `T14_SEDE`, `T14_FUNCION`, `T14_SECTOR`
+y `T14_EXPEDIENTE`. En una campaña de Brevo se usan así: `{{ contact.T14_CENTRO }}`.
+
+Comandos desde el editor SQL de Supabase:
+
+```sql
+-- Correo de la segunda entrega a una sola dirección inscrita, para revisarlo
+select public.t14_admin('anunciar', '{"prueba": "tu@correo.com"}');
+-- Envío real a quienes aún no lo recibieron (por tandas de hasta 250)
+select public.t14_admin('anunciar', '{"limite": 150}');
+-- Copiar enlaces y resultados a Brevo (por tandas; usa "desde" con el ultimo_id de la respuesta)
+select public.t14_admin('sincronizar');
+-- Ver la respuesta de la última llamada
+select status_code, content from net._http_response order by id desc limit 1;
+```
+
+Los correos `@example.com` no tocan Brevo: sirven para probar.

@@ -17,6 +17,7 @@ Resumen para retomar el trabajo en una conversación nueva. Estado al 23 de octu
 | Código | GitHub `dpalacioporras-blip/volver-a-sumar` (rama `main`); Vercel publica solo cada cambio |
 | Registros | Supabase, proyecto `volver-a-sumar` (id `jcsdruohnwkfsonesonx`), tabla `public.registros` |
 | Correo de bienvenida | Función de Supabase `bienvenida` + Brevo, lista **#3** "Volver a sumar", remitente tvpandemonium@gmail.com |
+| Formulario T-14 (segunda entrega) | `/t14`, función de Supabase `t14`, tabla `public.asignaciones` |
 | Capítulo 1 | `descargas/volver-a-sumar-capitulo-1.pdf` (enlace que va en el correo) |
 | Piezas gráficas | `piezas/`: banners web (horizontal y vertical), banner de transmisión 1920×260 con QR, historia de Instagram |
 | Web principal del autor | https://www.pandemoniumpodcast.com (WordPress, banner enlazado a la página de registro) |
@@ -46,15 +47,30 @@ Resumen para retomar el trabajo en una conversación nueva. Estado al 23 de octu
 - Remitente con dominio propio en Brevo (p. ej. `hola@pandemoniumpodcast.com`) para que menos correos caigan en spam.
 - Correo de lanzamiento con el precio para la lista #3.
 
-## Próximo paso: el juego de asignación
+## Segunda entrega: formulario T-14 (`/t14`)
 
-Segunda entrega para registrados antes del lanzamiento: un juego en el que cada persona es (o no) **asignada a un Centro de Reagrupación** según los criterios del libro.
+Juego de asignación construido el 23 de octubre de 2026 a partir de la biblia de la novela (capítulos 37 y 45).
+Detalle técnico y comandos en `README.md`.
 
-Ideas acordadas:
-- 6 a 8 preguntas con tono de formulario oficial.
-- Resultado compartible: una "credencial" con nombre, centro y función, en formato de historia de Instagram.
-- "No asignado" también debe ser un resultado con historia propia, no una derrota.
-- Guardar el resultado en Supabase para personalizar el correo de lanzamiento.
-- Solo para registrados; se anuncia por correo como la segunda entrega.
+- Es el **Formulario único de reubicación, modelo T-14**: 14 preguntas, una por pantalla, con datos reales.
+- Reglas del libro: **Categoría A** (oficio esencial acreditado: medicina, ingeniería civil y energética, saneamiento,
+  agricultura certificada, seguridad; o cónyuge/dependiente con uno de esos oficios), **Categoría B** (puede pagar
+  traslado, trámites, cuota de reasentamiento y 90 días de alojamiento, sin importar el oficio) y **lista de espera abierta**
+  (no asignado; la credencial nunca dice "Categoría C").
+- Centro = país de residencia → uno de los 14 Centros de Reunión. Función = nombre del libro ("Sanidad y Mantenimiento",
+  "Cuerpo de Seguridad de la Fertilidad"…). Sector según la fórmula de vivienda del libro.
+- Resultado: credencial 1080×1920 (o constancia "No asignado") para compartir; se guarda en Supabase y en Brevo.
 
-Lo que falta del autor: los criterios de asignación, los nombres de los centros o sectores, las funciones posibles y qué no se puede revelar antes del lanzamiento.
+Decisiones del autor:
+- Se puede usar el T-14, sus categorías y los 14 Centros con sus sedes. **No** se usan cifras de población ni porcentajes,
+  personajes ni trama.
+- 14 preguntas, como el T-14 del libro. La solicitud se radica **una sola vez**.
+- Quien declara oficio de seguridad queda en el **Cuerpo de Seguridad de la Fertilidad**.
+
+Detalles inventados para el juego (el autor puede cambiarlos en `t14/datos.js`): los rangos de sector por función, las
+preguntas que no deciden el resultado (edad, años de oficio, plantas, grupos, disponibilidad), las anotaciones del
+funcionario y la observación "Remitida al Cuerpo de Seguridad de la Fertilidad" para quien declara participar en grupos
+que cuestionan la Decisión.
+
+Pendiente: enviar el correo de la segunda entrega (`t14_admin('anunciar', …)`) y usar los atributos `T14_*` en el
+correo de lanzamiento.
