@@ -4,12 +4,12 @@
 //
 // Canon (biblia y capítulos 37 y 45):
 // - Categoría A, traslado inmediato y financiado: personal esencial de medicina, ingeniería civil y energética,
-//   saneamiento, agricultura certificada y seguridad. Incluye cónyuge y descendencia directa.
+//   saneamiento, agricultura certificada y seguridad.
 // - Categoría B, traslado autorizado con costo a cargo del solicitante, sin importar su oficio.
 // - Lista de espera abierta: los demás. Ese nombre ("Categoría C") no aparece en ningún formulario.
-// - El orden de la ventanilla: ocupación registrada → dependiente con ocupación de categoría uno → capacidad de pago.
 // Decisiones del autor (23 oct 2026): sin cifras de población ni porcentajes, sin personajes ni trama;
-// 14 preguntas; la solicitud se radica una sola vez; seguridad → Cuerpo de Seguridad de la Fertilidad.
+// la solicitud se radica una sola vez; seguridad → Cuerpo de Seguridad de la Fertilidad;
+// 8 preguntas hipotéticas (qué harías si…), no datos personales; cerca de la mitad asignados (no tiene que ser exacto).
 
 export const CENTROS = {
   norteamerica: { nombre: "Norteamérica", de: "de Norteamérica", sede: "Chicago" },
@@ -55,169 +55,155 @@ export function paisPorCodigo(codigo) {
   return PAISES.find((p) => p[0] === codigo) ?? null;
 }
 
-// Ocupación registrada. "esencial" = categoría uno. "sectores" aplica la fórmula de vivienda del libro:
-// rol laboral + tamaño de la familia + «proximidad funcional a la infraestructura crítica»
-// (los trabajos que nadie quiere viven cerca de lo que nadie quiere tener cerca).
-export const OFICIOS = {
-  medicina: { texto: "Medicina o atención en salud", corto: "Salud", esencial: true, funcion: "Medicina", sectores: [1, 2] },
-  ingenieria: { texto: "Ingeniería civil, eléctrica o energética", corto: "Ingeniería", esencial: true, funcion: "Ingeniería civil y energética", sectores: [6, 7, 8] },
-  saneamiento: { texto: "Agua, saneamiento, aseo o mantenimiento", corto: "Saneamiento", esencial: true, funcion: "Sanidad y Mantenimiento", sectores: [4, 9, 11] },
-  agricultura: { texto: "Agricultura o producción de alimentos", corto: "Agricultura", esencial: true, funcion: "Agricultura certificada", sectores: [10, 12] },
-  seguridad: { texto: "Policía, fuerzas armadas o seguridad", corto: "Seguridad", esencial: true, funcion: "Cuerpo de Seguridad de la Fertilidad", sectores: [2, 3, 5] },
-  educacion: { texto: "Educación", corto: "Educación", esencial: false },
-  comunicacion: { texto: "Comunicación, artes o cultura", corto: "Comunicación y cultura", esencial: false },
-  tecnologia: { texto: "Tecnología o ciencia", corto: "Tecnología y ciencia", esencial: false },
-  administracion: { texto: "Comercio, administración o finanzas", corto: "Comercio y administración", esencial: false },
-  oficios: { texto: "Construcción, transporte u otro oficio técnico", corto: "Oficio técnico", esencial: false },
-  otra: { texto: "Otra ocupación", corto: "Ocupación no prioritaria", esencial: false },
-  ninguna: { texto: "Estudiante, hogar o sin ocupación remunerada", corto: "Sin ocupación registrada", esencial: false },
+// Funciones del Centro. "sectores" aplica la fórmula de vivienda del libro: rol laboral +
+// «proximidad funcional a la infraestructura crítica» (los trabajos que nadie quiere viven cerca de lo que nadie quiere tener cerca).
+export const FUNCIONES = {
+  med: { funcion: "Medicina", sectores: [1, 2] },
+  ing: { funcion: "Ingeniería civil y energética", sectores: [6, 7, 8] },
+  san: { funcion: "Sanidad y Mantenimiento", sectores: [4, 9, 11] },
+  agr: { funcion: "Agricultura certificada", sectores: [10, 12] },
+  seg: { funcion: "Cuerpo de Seguridad de la Fertilidad", sectores: [2, 3, 5] },
 };
-
-const SECTORES_FAMILIA = [4, 5, 6];
 const SECTORES_PAGO = [3, 4, 5];
 
-const op = (id, texto) => ({ id, texto });
-
-export const SECCIONES = [
-  "I. Identificación del solicitante",
-  "II. Ocupación",
-  "III. Núcleo familiar",
-  "IV. Situación económica",
-  "V. Declaraciones",
-];
+// Cada opción suma puntos (no se muestran): med, ing, san, agr, seg = funciones; afuera = no se deja ordenar;
+// paga = acepta pagar el traslado.
+const op = (id, texto, p = {}) => ({ id, texto, p });
 
 export const PREGUNTAS = [
-  { id: "nombre", seccion: 0, tipo: "texto", texto: "Nombre completo del solicitante", ayuda: "Así aparecerá en su credencial." },
-  { id: "pais", seccion: 0, tipo: "pais", texto: "Jurisdicción de residencia", ayuda: "Determina el Centro de Reunión que recibe a su perímetro." },
-  { id: "edad", seccion: 0, tipo: "opciones", texto: "Rango de edad", opciones: [
-    op("18-29", "De 18 a 29 años"), op("30-44", "De 30 a 44 años"), op("45-59", "De 45 a 59 años"), op("60+", "60 años o más"),
+  { id: "luz", texto: "Se va la luz en todo el barrio por tres días. ¿Qué hace primero?", opciones: [
+    op("tablero", "Busco la falla en el tablero", { ing: 2 }),
+    op("casas", "Voy casa por casa a ver si alguien está enfermo", { med: 2 }),
+    op("agua", "Saco el agua guardada y organizo turnos", { san: 2 }),
+    op("tienda", "Cuido que nadie saquee la tienda", { seg: 2 }),
+    op("dormir", "Me voy a dormir. Mañana será otro día", { afuera: 1 }),
   ] },
-  { id: "oficio", seccion: 1, tipo: "opciones", texto: "Ocupación registrada", ayuda: "Seleccione la que ejerce hoy.",
-    opciones: Object.entries(OFICIOS).map(([id, o]) => op(id, o.texto)) },
-  { id: "acredita", seccion: 1, tipo: "opciones", texto: "¿Puede acreditar su ocupación con título, tarjeta profesional o certificado vigente?", opciones: [
-    op("si", "Sí, con documento vigente"), op("tramite", "Está en trámite"), op("no", "No"),
+  { id: "maleta", texto: "Solo puede llevar una maleta al traslado. ¿Qué no puede faltar?", opciones: [
+    op("herramientas", "Herramientas", { ing: 2 }),
+    op("botiquin", "Un botiquín", { med: 2 }),
+    op("filtro", "Un filtro de agua", { san: 2 }),
+    op("semillas", "Semillas", { agr: 2 }),
+    op("fotos", "Fotos y cartas", { afuera: 1 }),
   ] },
-  { id: "anios", seccion: 1, tipo: "opciones", texto: "Años de ejercicio de la ocupación", opciones: [
-    op("0-2", "Menos de 2"), op("2-10", "Entre 2 y 10"), op("10+", "Más de 10"),
+  { id: "ventanilla", texto: "La ventanilla le ofrece un cupo a cambio de todo lo que tiene de valor.", opciones: [
+    op("entrego", "Lo entrego sin pensarlo", { paga: 1 }),
+    op("negocio", "Intento negociar"),
+    op("niego", "Me niego", { afuera: 1 }),
   ] },
-  { id: "conyuge", seccion: 2, tipo: "opciones", texto: "¿Tiene cónyuge o compañero permanente?", opciones: [
-    op("si", "Sí"), op("no", "No"),
+  { id: "cupo", texto: "El cupo es solo para usted. Su familia queda en lista de espera.", opciones: [
+    op("tomo", "Lo tomo. Después veré cómo sacarlos"),
+    op("quedo", "Me quedo con ellos", { afuera: 1 }),
+    op("cedo", "Se lo cedo a otra persona", { afuera: 1, med: 1 }),
   ] },
-  { id: "dependientes", seccion: 2, tipo: "opciones", texto: "Dependientes a cargo", opciones: [
-    op("0", "Ninguno"), op("1", "1"), op("2", "2"), op("3+", "3 o más"),
+  { id: "planta", texto: "Encuentra una planta reventando el concreto, en un lugar donde nadie la riega.", opciones: [
+    op("reporto", "La reporto", { seg: 1 }),
+    op("riego", "La riego en secreto", { agr: 2 }),
+    op("dejo", "La dejo en paz y no le digo a nadie", { afuera: 1 }),
   ] },
-  { id: "familiar", seccion: 2, tipo: "opciones", texto: "¿Su cónyuge o alguno de sus dependientes ejerce una ocupación de categoría uno?",
-    ayuda: "Medicina, ingeniería de infraestructura, agua y saneamiento, agricultura certificada o cuerpos de seguridad, con documento vigente.", opciones: [
-    op("si", "Sí, y la puede acreditar"), op("no", "No"), op("na", "No aplica"),
+  { id: "vecino", texto: "Un vecino le cuenta que en el perímetro desafectado todavía vive gente.", opciones: [
+    op("reporto", "Lo reporto", { seg: 1 }),
+    op("voy", "Voy a ver con mis propios ojos", { afuera: 1 }),
+    op("callo", "No digo nada"),
   ] },
-  { id: "prevision", seccion: 3, tipo: "opciones", texto: "¿Cuenta con cobertura previsional vigente?", ayuda: "Pensión o seguridad social.", opciones: [
-    op("si", "Sí"), op("no", "No"), op("ns", "No sabe"),
+  { id: "fila", texto: "En la fila del traslado, alguien se cuela con un niño enfermo.", opciones: [
+    op("paso", "Lo dejo pasar", { med: 1 }),
+    op("guardia", "Llamo al guardia", { seg: 1 }),
+    op("turno", "Le cedo mi turno y me voy", { afuera: 1 }),
   ] },
-  { id: "pago", seccion: 3, tipo: "opciones", texto: "¿Puede cubrir el transporte, los trámites, la cuota de reasentamiento y los primeros noventa días de alojamiento?",
-    ayuda: "Con recursos propios o con su cobertura previsional.", opciones: [
-    op("total", "Sí, en su totalidad"), op("parcial", "Solo una parte"), op("no", "No"),
-  ] },
-  { id: "plantas", seccion: 4, tipo: "opciones", texto: "¿Mantiene plantas ornamentales en su domicilio?", ayuda: "El riego ornamental está racionado.", opciones: [
-    op("si", "Sí"), op("no", "No"),
-  ] },
-  { id: "grupos", seccion: 4, tipo: "opciones", texto: "¿Ha participado en reuniones o grupos que cuestionen la Decisión?", opciones: [
-    op("no", "No"), op("si", "Sí"), op("nr", "Prefiere no responder"),
-  ] },
-  { id: "traslado", seccion: 4, tipo: "opciones", texto: "Disponibilidad para el traslado", opciones: [
-    op("inmediata", "Inmediata"), op("30", "Dentro de treinta días"), op("mas", "Necesita más tiempo"),
+  { id: "turno", texto: "En el Centro le piden escoger un turno de trabajo. ¿Cuál pide?", opciones: [
+    op("tanques", "Limpiar los tanques de agua", { san: 2 }),
+    op("red", "Reparar la red eléctrica", { ing: 2 }),
+    op("cultivo", "Cultivar bajo techo", { agr: 2 }),
+    op("reparto", "Vigilar el reparto", { seg: 2 }),
+    op("clinica", "Atender en la clínica", { med: 2 }),
   ] },
 ];
+
+// Reglas calibradas con simulación (scripts de prueba): con respuestas al azar, cerca de la mitad queda asignada.
+export const UMBRAL_AFUERA = 3;   // desde aquí, la persona no se deja ordenar: lista de espera…
+export const UMBRAL_VOCACION = 5; // …salvo que su vocación por una función sea así de fuerte
+export const UMBRAL_FUNCION = 4;  // puntos mínimos para que una función sea imprescindible (Categoría A)
 
 export const NOMBRE_MAX = 60;
 
 // Devuelve un mensaje de error o null.
 export function validar(r) {
   if (!r || typeof r !== "object") return "Respuestas inválidas";
+  if (typeof r.nombre !== "string" || r.nombre.trim().length < 1 || r.nombre.trim().length > NOMBRE_MAX) return "El nombre debe tener entre 1 y 60 caracteres";
+  if (typeof r.pais !== "string" || !paisPorCodigo(r.pais)) return "Jurisdicción no reconocida";
   for (const p of PREGUNTAS) {
-    const v = r[p.id];
-    if (typeof v !== "string") return `Falta la respuesta: ${p.texto}`;
-    if (p.tipo === "texto") {
-      const t = v.trim();
-      if (t.length < 1 || t.length > NOMBRE_MAX) return "El nombre debe tener entre 1 y 60 caracteres";
-    } else if (p.tipo === "pais") {
-      if (!paisPorCodigo(v)) return "Jurisdicción no reconocida";
-    } else if (!p.opciones.some((o) => o.id === v)) {
-      return `Respuesta no válida: ${p.texto}`;
-    }
+    if (!p.opciones.some((o) => o.id === r[p.id])) return `Respuesta no válida: ${p.texto}`;
   }
   return null;
 }
 
 // Copia limpia con solo las claves del formulario.
 export function limpiar(r) {
-  const out = {};
-  for (const p of PREGUNTAS) out[p.id] = p.tipo === "texto" ? String(r[p.id]).trim().replace(/\s+/g, " ") : r[p.id];
+  const out = { nombre: String(r.nombre).trim().replace(/\s+/g, " "), pais: r.pais };
+  for (const p of PREGUNTAS) out[p.id] = r[p.id];
   return out;
 }
 
 export function textoRespuesta(p, v) {
-  if (p.tipo === "texto") return v;
-  if (p.tipo === "pais") return paisPorCodigo(v)?.[1] ?? v;
   return p.opciones.find((o) => o.id === v)?.texto ?? v;
 }
 
+export function puntaje(r) {
+  const t = { med: 0, ing: 0, san: 0, agr: 0, seg: 0, afuera: 0, paga: 0 };
+  for (const p of PREGUNTAS) {
+    const o = p.opciones.find((x) => x.id === r[p.id]);
+    if (o) for (const [k, v] of Object.entries(o.p)) t[k] += v;
+  }
+  return t;
+}
+
+const DE_TURNO = { tanques: "san", red: "ing", cultivo: "agr", reparto: "seg", clinica: "med" };
+
 // Resultado de la ventanilla. "semilla" (el id del registro) reparte el sector dentro del rango de cada función.
 export function resolver(r, semilla) {
-  const oficio = OFICIOS[r.oficio];
   const pais = paisPorCodigo(r.pais);
-  const tieneFamilia = r.conyuge === "si" || r.dependientes !== "0";
-  const acreditada = r.acredita === "si";
-  const familiarEsencial = r.familiar === "si" && tieneFamilia;
-  const anotaciones = [];
+  const t = puntaje(r);
+  // Función dominante; en empate decide el turno que pidió (pregunta 8).
+  const orden = ["med", "ing", "san", "agr", "seg"].sort((a, b) =>
+    (t[b] - t[a]) || ((DE_TURNO[r.turno] === b) - (DE_TURNO[r.turno] === a)));
+  const top = orden[0];
 
   let categoria, via, funcion = null, sectores = null;
-  if (oficio.esencial && acreditada) {
-    categoria = "A"; via = "oficio"; funcion = oficio.funcion; sectores = oficio.sectores;
-  } else if (familiarEsencial) {
-    categoria = "A"; via = "familia"; funcion = "Núcleo familiar de personal esencial"; sectores = SECTORES_FAMILIA;
-  } else if (r.pago === "total") {
-    categoria = "B"; via = "pago"; sectores = SECTORES_PAGO;
-    funcion = `${oficio.corto} · sin prioridad`;
+  if (t.afuera >= UMBRAL_AFUERA && t[top] < UMBRAL_VOCACION) {
+    categoria = "ESPERA"; via = "afuera";
+  } else if (t[top] >= UMBRAL_FUNCION) {
+    categoria = "A"; via = "funcion"; funcion = FUNCIONES[top].funcion; sectores = FUNCIONES[top].sectores;
+  } else if (t.paga > 0) {
+    categoria = "B"; via = "pago"; funcion = "Por asignar · sin prioridad"; sectores = SECTORES_PAGO;
   } else {
-    categoria = "ESPERA"; via = null;
+    categoria = "ESPERA"; via = "sin_funcion";
   }
+  const espera = categoria === "ESPERA";
 
-  // Anotaciones del funcionario: no cambian la categoría, solo la explican.
-  if (oficio.esencial && !acreditada) {
-    anotaciones.push(r.acredita === "tramite"
-      ? "Su ocupación figura entre las prioritarias, pero no se admiten acreditaciones en trámite."
-      : "Su ocupación figura entre las prioritarias, pero no la acreditó.");
-  }
-  if (r.familiar === "si" && !tieneFamilia) {
-    anotaciones.push("Declaró un familiar de categoría uno sin declarar cónyuge ni dependientes. La declaración no se tuvo en cuenta.");
-  }
-  if (categoria === "A" && r.dependientes !== "0") {
-    anotaciones.push("La admisión incluye al cónyuge y a la descendencia directa. Los demás dependientes deben presentar su propia solicitud.");
-  }
-  if (categoria === "ESPERA") {
-    if (r.prevision === "si" && r.pago !== "total") anotaciones.push("Su cobertura previsional no alcanza para cubrir los costos del traslado.");
-    if (r.pago === "parcial") anotaciones.push("El pago parcial no habilita un traslado con costo a cargo del solicitante.");
-    if (tieneFamilia) anotaciones.push("Su núcleo familiar queda en la misma lista.");
-    if (r.plantas === "si") anotaciones.push("Sus plantas se quedan con usted. El agua, no.");
-  } else {
-    if (r.plantas === "si") anotaciones.push("Las plantas ornamentales no se incluyen en el traslado.");
-    if (r.traslado === "mas") anotaciones.push("La fecha de traslado no admite prórroga.");
-  }
+  // Anotaciones del funcionario: no cambian el resultado, lo comentan.
+  const a = [];
+  if (r.ventanilla === "negocio") a.push("La ventanilla no negocia.");
+  if (r.cupo === "tomo" && !espera) a.push("Su núcleo familiar queda en lista de espera.");
+  if (r.cupo === "quedo") a.push("Su núcleo familiar queda en la misma lista que usted.");
+  if (r.cupo === "cedo") a.push("Cedió su cupo. La cesión no se registra a nombre de nadie.");
+  if (r.planta === "riego") a.push(espera ? "Sus plantas se quedan con usted. El agua, no." : "El riego ornamental está racionado. La planta no se incluye en el traslado.");
+  if (r.planta === "reporto") a.push("Su reporte de vegetación no autorizada fue recibido.");
+  if (r.maleta === "fotos") a.push("Los objetos personales no figuran en el inventario del traslado.");
+  if (r.fila === "guardia") a.push("El incidente en la fila quedó registrado.");
+  const anotaciones = a.slice(0, 3);
 
   let observacion = "Ninguna.";
-  if (r.grupos === "si") observacion = "Remitida al Cuerpo de Seguridad de la Fertilidad para verificación.";
-  else if (r.grupos === "nr") observacion = "Sección V incompleta.";
+  if (r.vecino === "voy") observacion = "Contacto declarado con perímetro desafectado. Remitida al Cuerpo de Seguridad de la Fertilidad.";
+  else if (r.vecino === "reporto") observacion = "Informante voluntario.";
 
   const n = Math.abs(Number(semilla) || 0);
-  const dep = { "0": 0, "1": 1, "2": 2, "3+": 3 }[r.dependientes] ?? 0;
-  const sector = sectores ? sectores[(n + dep) % sectores.length] : null;
-  const centro = categoria === "ESPERA" ? null : pais[2];
+  const sector = sectores ? sectores[n % sectores.length] : null;
 
   return {
     nombre: r.nombre,
     categoria,
     via,
-    centro,
+    centro: espera ? null : pais[2],
     pais: pais[1],
     funcion,
     sector,
@@ -253,27 +239,33 @@ export const RESULTADOS = {
 };
 
 export function explicacion(res) {
-  if (res.categoria === "A" && res.via === "oficio") return [
-    "Su ocupación figura entre las que el Centro necesita para sostenerse. La Administración cubre el traslado y lo hace de inmediato.",
+  if (res.categoria === "A") return [
+    `La ventanilla evaluó sus respuestas. El Centro necesita a alguien como usted en ${res.funcion}. La Administración cubre el traslado y lo hace de inmediato.`,
     "Preséntese en el punto de control de traslado con esta credencial.",
   ];
-  if (res.categoria === "A") return [
-    "Su ocupación no califica por sí sola, pero su núcleo familiar incluye personal esencial. La admisión cubre al cónyuge y a la descendencia directa.",
-    "Preséntese con su familiar en el punto de control de traslado.",
-  ];
   if (res.categoria === "B") return [
-    "Su ocupación no figura entre las prioritarias. Su capacidad de pago sí.",
-    "El cupo queda reservado mientras acredite el pago del transporte, los trámites, la cuota de reasentamiento y los primeros noventa días de alojamiento.",
+    "Ninguna de sus respuestas lo vuelve imprescindible. Su disposición a pagar, sí.",
+    "El cupo queda reservado mientras acredite el pago del transporte, los trámites, la cuota de reasentamiento y los primeros noventa días de alojamiento. La función se le asignará al llegar.",
   ];
-  return [
-    "Su solicitud fue recibida y quedó en lista de espera abierta. La lista no tiene fecha de cierre, ni turno, ni respuesta prevista.",
+  const cola = [
     "Su perímetro de residencia será desafectado. Se retiran el agua, la energía, el transporte y la atención médica. Con los servicios se van también las cámaras, los controles y los conteos.",
     "Fuera del perímetro nadie lo va a registrar. Y lo que nadie registra, nadie lo puede detener.",
   ];
+  if (res.via === "afuera") return [
+    "Sus respuestas no son las de alguien que espera turno. La ventanilla lo anotó en lista de espera abierta, y usted no va a volver a preguntar.",
+    ...cola,
+  ];
+  return [
+    "La ventanilla no encontró en sus respuestas una función que el Centro necesite, ni una oferta de pago. Su solicitud quedó en lista de espera abierta: sin fecha de cierre, sin turno, sin respuesta prevista.",
+    ...cola,
+  ];
 }
 
+export const INSTAGRAM = "@IDanielPanda";
+
 export function textoCompartir(res) {
-  if (res.categoria === "ESPERA") return "No me asignaron. Quedé en lista de espera abierta, fuera del perímetro. ¿A ti te admitirían?";
+  const cola = `¿A ti te admitirían? ${INSTAGRAM} #VolverASumar`;
+  if (res.categoria === "ESPERA") return `No me asignaron. Quedé en lista de espera abierta, fuera del perímetro. ${cola}`;
   const c = CENTROS[res.centro];
-  return `Me asignaron al Centro de Reunión ${c.de}, sector ${res.sector}: ${res.funcion}. ¿A ti te admitirían?`;
+  return `Me asignaron al Centro de Reunión ${c.de}, sector ${res.sector}: ${res.funcion}. ${cola}`;
 }

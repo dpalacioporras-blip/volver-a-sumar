@@ -52,25 +52,26 @@ Resumen para retomar el trabajo en una conversación nueva. Estado al 23 de octu
 Juego de asignación construido el 23 de octubre de 2026 a partir de la biblia de la novela (capítulos 37 y 45).
 Detalle técnico y comandos en `README.md`.
 
-- Es el **Formulario único de reubicación, modelo T-14**: 14 preguntas, una por pantalla, con datos reales.
-- Reglas del libro: **Categoría A** (oficio esencial acreditado: medicina, ingeniería civil y energética, saneamiento,
-  agricultura certificada, seguridad; o cónyuge/dependiente con uno de esos oficios), **Categoría B** (puede pagar
-  traslado, trámites, cuota de reasentamiento y 90 días de alojamiento, sin importar el oficio) y **lista de espera abierta**
-  (no asignado; la credencial nunca dice "Categoría C").
-- Centro = país de residencia → uno de los 14 Centros de Reunión. Función = nombre del libro ("Sanidad y Mantenimiento",
-  "Cuerpo de Seguridad de la Fertilidad"…). Sector según la fórmula de vivienda del libro.
-- Resultado: credencial 1080×1920 (o constancia "No asignado") para compartir; se guarda en Supabase y en Brevo.
+- Es el **Formulario único de reubicación, modelo T-14**. Primera página: un avance del libro (la Decisión, el número
+  que solo baja, la desafectación, "La ventanilla no pregunta quién eres. Pregunta para qué sirves"), nombre y país.
+- **8 preguntas hipotéticas** (qué harías si…), sin datos personales. Cada opción suma puntos ocultos hacia una función,
+  hacia "pagar" o hacia "afuera".
+- Resultado según el libro: **Categoría A** (una función sobresale: Medicina, Ingeniería civil y energética, Sanidad y
+  Mantenimiento, Agricultura certificada o Cuerpo de Seguridad de la Fertilidad), **Categoría B** (ninguna sobresale pero
+  entrega todo en la ventanilla) o **lista de espera abierta** (no asignado; la credencial nunca dice "Categoría C").
+  Calibrado para que cerca de la mitad quede asignada.
+- Centro = país de residencia → uno de los 14 Centros de Reunión. Sector según la fórmula de vivienda del libro.
+- Resultado: credencial 1080×1920 (o constancia "No asignado") con invitación a subirla a Instagram y etiquetar a
+  **@IDanielPanda**; se guarda en Supabase y en Brevo.
 
 Decisiones del autor:
 - Se puede usar el T-14, sus categorías y los 14 Centros con sus sedes. **No** se usan cifras de población ni porcentajes,
   personajes ni trama.
-- 14 preguntas, como el T-14 del libro. La solicitud se radica **una sola vez**.
-- Quien declara oficio de seguridad queda en el **Cuerpo de Seguridad de la Fertilidad**.
+- Preguntas de situación, no de datos personales; no tiene que ser exactamente mitad y mitad. La solicitud se radica **una sola vez**.
+- Quien muestra vocación de seguridad queda en el **Cuerpo de Seguridad de la Fertilidad**.
 
-Detalles inventados para el juego (el autor puede cambiarlos en `t14/datos.js`): los rangos de sector por función, las
-preguntas que no deciden el resultado (edad, años de oficio, plantas, grupos, disponibilidad), las anotaciones del
-funcionario y la observación "Remitida al Cuerpo de Seguridad de la Fertilidad" para quien declara participar en grupos
-que cuestionan la Decisión.
+Detalles del juego que el autor puede ajustar en `t14/datos.js`: los puntos de cada opción, los umbrales, los rangos de
+sector por función, las anotaciones del funcionario y las observaciones.
 
 Pendiente: enviar el correo de la segunda entrega (`t14_admin('anunciar', …)`) y usar los atributos `T14_*` en el
 correo de lanzamiento.

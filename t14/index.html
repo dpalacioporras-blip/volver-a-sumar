@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Formulario T-14 · Volver a sumar, de Daniel Palacio P.</title>
-<meta name="description" content="Formulario único de reubicación, modelo T-14. Catorce preguntas deciden si te asignan a un Centro de Reunión, con qué función y en qué sector. Segunda entrega del registro de Volver a sumar.">
+<meta name="description" content="Formulario único de reubicación, modelo T-14. Ocho preguntas sobre lo que harías deciden si te asignan a un Centro de Reunión o quedas en lista de espera abierta. Segunda entrega del registro de Volver a sumar.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://volverasumar.pandemoniumpodcast.com/t14">
 <meta property="og:title" content="Formulario T-14 · ¿Te admitirían en un Centro de Reunión?">
-<meta property="og:description" content="Tu perímetro será desafectado. Catorce preguntas deciden si te asignan a un Centro de Reunión o quedas en lista de espera abierta.">
+<meta property="og:description" content="Tu perímetro será desafectado. Ocho preguntas deciden si te asignan a un Centro de Reunión o quedas en lista de espera abierta.">
 <meta property="og:image" content="https://volverasumar.pandemoniumpodcast.com/t14/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -17,7 +17,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231F2235'/%3E%3Cpath d='M16 6a10 10 0 0 0 0 20z' fill='%23E0806C'/%3E%3Cpath d='M16 6a10 10 0 0 1 0 20z' fill='%234FA3C7'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Saira:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Saira:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Literata:ital,wght@0,400;1,400&display=swap">
 <link rel="modulepreload" href="/t14/datos.js">
 <link rel="modulepreload" href="/t14/credencial.js">
 <style>
@@ -54,6 +54,10 @@ main{flex:1;padding-top:40px;padding-bottom:72px}
 @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.vista.entra{animation:none}}
 
+/* El avance: texto de libro */
+.avance{display:flex;flex-direction:column;gap:14px;font-family:'Literata',Georgia,serif;font-size:18px;line-height:1.65;color:var(--soft);border-left:3px solid var(--warm);padding-left:18px}
+.avance p:last-child{color:var(--text);font-style:italic}
+
 /* La hoja oficial */
 .hoja{background:var(--panel);border:1px solid var(--line);border-radius:8px;position:relative;overflow:hidden;padding:30px 24px 28px;display:flex;flex-direction:column;gap:20px}
 .hoja::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,var(--warm) 0%,#C9A2A2 50%,var(--cool) 100%)}
@@ -76,10 +80,11 @@ main{flex:1;padding-top:40px;padding-bottom:72px}
 .enlace-btn{background:none;border:0;padding:8px 0;color:var(--muted);font:inherit;font-size:15px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .enlace-btn:hover{color:var(--text)}
 
-/* Formulario de acceso */
+/* Campos */
 form{display:flex;flex-direction:column;gap:16px;margin:0}
 .field{display:flex;flex-direction:column;gap:8px}
 .field label{font-family:'Saira',sans-serif;font-weight:500;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.field .ayuda{font-size:14px;color:var(--muted)}
 input[type=text],input[type=email],select{height:54px;padding:0 16px;background:var(--bg);color:var(--text);border:1px solid var(--field);border-radius:4px;font:inherit;font-size:17px;width:100%}
 select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 22px) 24px,calc(100% - 16px) 24px;background-size:6px 6px;background-repeat:no-repeat;padding-right:44px}
 input::placeholder{color:#7E839C}
@@ -90,13 +95,12 @@ input::placeholder{color:#7E839C}
 /* Preguntas */
 .q-cabeza{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
 .q-num{font-family:'Saira',sans-serif;font-weight:600;font-size:14px;letter-spacing:.14em;color:var(--text);font-variant-numeric:tabular-nums}
-.progreso{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
+.progreso{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
 .progreso i{height:6px;background:var(--line);border-radius:1px}
 .progreso i.hecha{background:var(--cool)}
 .progreso i.actual{background:var(--warm)}
-.q-texto{font-size:clamp(22px,4.2vw,30px);line-height:1.2;font-weight:600;letter-spacing:-.005em}
+.q-texto{font-size:clamp(22px,4.2vw,30px);line-height:1.22;font-weight:600;letter-spacing:-.005em}
 .q-texto:focus{outline:none}
-.q-ayuda{color:var(--muted);font-size:15px;margin-top:-8px}
 .opciones{display:flex;flex-direction:column;gap:10px}
 .opcion{display:flex;gap:14px;align-items:center;width:100%;min-height:56px;padding:12px 16px;background:var(--bg);border:1px solid var(--field);border-radius:4px;color:var(--text);font:inherit;font-size:17px;line-height:1.35;text-align:left;cursor:pointer}
 .opcion:hover{border-color:var(--soft)}
@@ -112,7 +116,6 @@ input::placeholder{color:#7E839C}
 .resumen dt{font-size:14px;color:var(--muted);grid-column:1}
 .resumen dd{margin:0;grid-column:1;color:var(--text)}
 .resumen .enlace-btn{grid-column:2;grid-row:1 / span 2;align-self:center;font-size:14px}
-.resumen .sec-tit{display:block;padding:18px 0 4px;border-top:0}
 
 /* Radicando */
 .pasos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-family:'Saira',sans-serif;font-size:15px;letter-spacing:.06em;color:var(--muted)}
@@ -128,8 +131,13 @@ input::placeholder{color:#7E839C}
 .cred{flex:1 1 280px;max-width:380px;margin:0 auto}
 .cred img{display:block;width:100%;height:auto;aspect-ratio:1080/1920;border-radius:10px;box-shadow:0 30px 70px rgba(8,10,20,.6),0 0 0 1px rgba(241,236,226,.08);background:var(--panel)}
 .r-texto{flex:999 1 300px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.insta{background:linear-gradient(90deg,rgba(224,128,108,.16),rgba(79,163,199,.16));border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.insta h2{font-size:clamp(18px,3.6vw,22px);line-height:1.2}
+.insta .arroba{color:var(--warm)}
+.insta ol{margin:0;padding-left:20px;color:var(--soft);font-size:15px;display:flex;flex-direction:column;gap:4px}
 .acciones{display:flex;flex-wrap:wrap;gap:10px}
 .acciones .btn{flex:1 1 200px}
+.copiado{font-size:14px;color:var(--sprout)}
 .explicacion{display:flex;flex-direction:column;gap:12px;color:var(--soft)}
 .explicacion p:last-child{color:var(--text)}
 .anotaciones{border-left:3px solid var(--cool);padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:8px}
@@ -161,7 +169,7 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <section id="v-acceso" class="vista" hidden>
 <div class="label cool">Registro de elegibilidad · Segunda entrega</div>
 <h1 class="display h-doc">Formulario único de reubicación</h1>
-<p class="lead">Tu perímetro de residencia será desafectado. Para pedir traslado a un Centro de Reunión hay que llenar el formulario T-14: catorce preguntas que deciden si te admiten, con qué función y en qué sector.</p>
+<div class="avance" data-avance></div>
 <p class="soft">El trámite es solo para quienes están en el registro de elegibilidad de <em>Volver a sumar</em>. Escribe tus datos y te enviamos tu enlace personal. Si aún no estás inscrito, quedas inscrito y te llega también el Capítulo 1 de la novela.</p>
 <p id="a-invalido" class="error" hidden>Ese enlace no corresponde a ningún expediente. Pide uno nuevo aquí abajo.</p>
 <div class="hoja">
@@ -194,20 +202,32 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 
 <!-- Aviso: expediente abierto -->
 <section id="v-aviso" class="vista" hidden>
+<div class="label cool">Registro de elegibilidad · Segunda entrega</div>
+<div class="avance" data-avance></div>
 <div class="hoja">
 <div class="membrete"><span class="label muted">Administración Central de Perímetros Administrados</span><small>Dirección de Ordenamiento Poblacional</small></div>
 <div class="label warm">Notificación de desafectación</div>
 <h1 class="display h-doc">Su perímetro de residencia será desafectado.</h1>
-<p class="lead">Titular del expediente: <strong id="av-nombre" style="color:var(--text)"></strong></p>
-<p class="soft">Para solicitar traslado a un Centro de Reunión, diligencie el Formulario único de reubicación, modelo T-14. La ventanilla resuelve según su ocupación, su núcleo familiar y su capacidad de pago.</p>
+<form id="f-aviso" novalidate>
+<div class="field">
+<label for="av-nombre">Nombre del solicitante</label>
+<input id="av-nombre" type="text" required autocomplete="name">
+<span class="ayuda">Así aparecerá en su credencial.</span>
+</div>
+<div class="field">
+<label for="av-pais">Jurisdicción de residencia</label>
+<select id="av-pais" required><option value="">Seleccione su país</option></select>
+<span class="ayuda">Determina el Centro de Reunión que recibe a su perímetro.</span>
+</div>
 <ul class="reglas">
-<li>Catorce preguntas, una por pantalla.</li>
-<li>Responda con sus datos reales.</li>
+<li>Ocho preguntas, una por pantalla.</li>
+<li>Responda según lo que haría en cada situación.</li>
 <li>Antes de firmar podrá revisar sus respuestas.</li>
 <li>La solicitud se radica una sola vez.</li>
 </ul>
-<button class="btn ancho" id="av-iniciar" type="button">Iniciar formulario</button>
-<p class="note">Guardamos tus respuestas y el resultado para personalizar tu correo de lanzamiento, y para nada más. <a href="/privacidad">Política de privacidad</a>.</p>
+<button class="btn ancho" id="av-iniciar" type="submit">Iniciar formulario</button>
+<p id="av-error" class="error" role="alert" hidden></p>
+</form>
 </div>
 </section>
 
@@ -215,14 +235,12 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <section id="v-pregunta" class="vista" hidden>
 <div class="hoja">
 <div class="q-cabeza">
-<span class="label muted" id="q-seccion"></span>
+<span class="label muted">Formulario T-14</span>
 <span class="q-num" id="q-num"></span>
 </div>
 <div class="progreso" id="q-progreso" aria-hidden="true"></div>
 <h2 class="q-texto" id="q-texto" tabindex="-1"></h2>
-<p class="q-ayuda" id="q-ayuda"></p>
 <div id="q-campo"></div>
-<p id="q-error" class="error" role="alert" hidden></p>
 <div class="q-pie">
 <button class="enlace-btn" id="q-atras" type="button">← Anterior</button>
 <button class="btn" id="q-seguir" type="button">Continuar</button>
@@ -234,11 +252,11 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <section id="v-revision" class="vista" hidden>
 <div class="hoja">
 <div class="membrete"><span class="label muted">Formulario único de reubicación · Modelo T-14</span><small>Revisión antes de la firma</small></div>
-<h2 class="display" style="font-size:clamp(22px,4.4vw,32px);line-height:1.1">Revise su solicitud</h2>
+<h2 class="display" style="font-size:clamp(22px,4.4vw,32px);line-height:1.1" tabindex="-1" id="rv-titulo">Revise su solicitud</h2>
 <dl class="resumen" id="rv-lista"></dl>
 <label class="check" for="rv-jura">
 <input id="rv-jura" type="checkbox">
-<span>Declaro que la información suministrada es veraz y entiendo que la solicitud se radica una sola vez.</span>
+<span>Declaro que mis respuestas son las de alguien que se juega su lugar, y entiendo que la solicitud se radica una sola vez.</span>
 </label>
 <button class="btn ancho" id="rv-firmar" type="button" disabled>Firmar y radicar</button>
 <p id="rv-error" class="error" role="alert" hidden></p>
@@ -251,9 +269,9 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <div class="label muted">Expediente en trámite</div>
 <h2 class="display" style="font-size:clamp(22px,4.4vw,32px);line-height:1.1">Radicando solicitud…</h2>
 <ol class="pasos" id="rd-pasos">
-<li>Verificando ocupación registrada</li>
+<li>Evaluando reacciones del solicitante</li>
 <li>Consultando núcleo familiar</li>
-<li>Evaluando capacidad de pago</li>
+<li>Evaluando disposición de pago</li>
 <li>Asignando Centro de Reunión</li>
 </ol>
 </div>
@@ -264,14 +282,25 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 <div class="r-cabeza">
 <div class="label muted" id="r-exp"></div>
 <h1 class="display r-estado" id="r-estado" tabindex="-1"></h1>
-<p class="r-categoria" id="r-categoria"></p>
+<p class="r-categoria muted" id="r-categoria"></p>
 </div>
 <div class="r-cuerpo">
 <figure class="cred" style="margin:0"><img id="r-img" alt="" width="1080" height="1920"></figure>
 <div class="r-texto">
+<div class="insta">
+<div class="label cool">Súbela a tus historias</div>
+<h2 class="display">Comparte tu credencial en Instagram y etiqueta a <span class="arroba">@IDanielPanda</span></h2>
+<ol>
+<li>Descarga la imagen o compártela directo desde aquí.</li>
+<li>Súbela a tus historias de Instagram.</li>
+<li>Etiqueta a <a href="https://www.instagram.com/idanielpanda/" target="_blank" rel="noopener">@IDanielPanda</a> y pregúntale a tu gente si la admitirían.</li>
+</ol>
 <div class="acciones">
 <button class="btn" id="r-compartir" type="button" hidden>Compartir credencial</button>
 <a class="btn sec" id="r-descargar" href="#" download>Descargar imagen</a>
+</div>
+<button class="enlace-btn" id="r-copiar" type="button" style="align-self:flex-start">Copiar texto para la publicación</button>
+<p class="copiado" id="r-copiado" role="status" hidden>Texto copiado. Pégalo en tu historia o publicación.</p>
 </div>
 <div class="explicacion" id="r-explicacion"></div>
 <div class="anotaciones" id="r-anotaciones" hidden>
@@ -280,7 +309,7 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 </div>
 <div class="cierre">
 <div class="label cool">Volver a sumar · Segunda entrega</div>
-<p>Comparte tu credencial en tus historias y pregúntale a tu gente si la admitirían. Cuando la novela salga a la venta te escribiremos con el precio de lanzamiento.</p>
+<p>Cuando la novela salga a la venta te escribiremos con el precio de lanzamiento.</p>
 <p><a href="/descargas/volver-a-sumar-capitulo-1.pdf">¿Aún no lees el Capítulo 1? Está aquí.</a></p>
 </div>
 </div>
@@ -290,18 +319,29 @@ footer a{color:var(--muted)}footer a:hover{color:var(--text)}
 </main>
 
 <footer class="wrap">
-<div>© 2026 Daniel Palacio P. · <em>Volver a sumar</em></div>
+<div>© 2026 Daniel Palacio P. · <em>Volver a sumar</em> · <a href="https://www.instagram.com/idanielpanda/" target="_blank" rel="noopener">@IDanielPanda</a></div>
 <div><a href="mailto:tvpandemonium@gmail.com">tvpandemonium@gmail.com</a> · <a href="/privacidad">Política de privacidad</a></div>
 </footer>
 
 <script type="module">
-import { PREGUNTAS, SECCIONES, PAISES, RESULTADOS, NOMBRE_MAX, textoRespuesta, explicacion, textoCompartir } from "/t14/datos.js";
+import { PREGUNTAS, PAISES, RESULTADOS, NOMBRE_MAX, textoRespuesta, explicacion, textoCompartir, paisPorCodigo } from "/t14/datos.js";
 import { dibujarCredencial, nombreArchivo } from "/t14/credencial.js";
 
 const API = "https://jcsdruohnwkfsonesonx.supabase.co/functions/v1/t14";
 const URL_PUBLICA = "https://volverasumar.pandemoniumpodcast.com/t14";
+const AVANCE = [
+  "En octubre de 2030, por votación global, la humanidad decidió ser la última generación. No hubo guerra ni epidemia. Hubo una votación, y después un plazo.",
+  "Desde entonces nadie ha vuelto a nacer. Cada noche, en las casas, alguien lee en voz alta un número que solo sabe bajar.",
+  "Con menos gente, mantener las ciudades dejó de tener sentido. Primero se apagan los barrios del borde: el agua, la luz, el transporte. Después llega la notificación. Su perímetro será desafectado.",
+  "Quien quiera seguir teniendo agua, luz y comida tiene que pedir traslado a un Centro de Reunión. Para eso existe el formulario T-14. La ventanilla no pregunta quién eres. Pregunta para qué sirves.",
+  "Esta vez el formulario es tuyo.",
+];
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+document.querySelectorAll("[data-avance]").forEach((el) => {
+  for (const t of AVANCE) { const p = document.createElement("p"); p.textContent = t; el.appendChild(p); }
+});
 
 // ---------- Almacenamiento del navegador (solo comodidad; puede fallar) ----------
 const guardar = (k, v) => { try { localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v)); } catch (e) {} };
@@ -331,8 +371,7 @@ let titular = "";
 let respuestas = {};
 let indice = 0;
 let desdeRevision = false;
-const claveBorrador = () => "t14_borrador_" + (token || "").slice(0, 8);
-
+const claveBorrador = () => "t14b_" + (token || "").slice(0, 8);
 function guardarBorrador() { guardar(claveBorrador(), { respuestas, indice }); }
 
 // ---------- Acceso ----------
@@ -363,16 +402,49 @@ $("f-enlace").addEventListener("submit", async (e) => {
   }
 });
 
-// ---------- Preguntas ----------
+// ---------- Aviso: nombre y país ----------
 function paisSugerido() {
   const idiomas = navigator.languages || [navigator.language || ""];
   for (const l of idiomas) {
     const m = /[-_]([A-Za-z]{2})$/.exec(l || "");
-    if (m && PAISES.some((p) => p[0] === m[1].toUpperCase())) return m[1].toUpperCase();
+    if (m && paisPorCodigo(m[1].toUpperCase())) return m[1].toUpperCase();
   }
   return "";
 }
 
+const selPais = $("av-pais");
+for (const [cod, nombre] of PAISES) {
+  const o = document.createElement("option");
+  o.value = cod; o.textContent = nombre;
+  selPais.appendChild(o);
+}
+$("av-nombre").maxLength = NOMBRE_MAX;
+
+$("f-aviso").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const err = $("av-error");
+  const nombre = $("av-nombre").value.trim().replace(/\s+/g, " ");
+  err.hidden = true;
+  if (!nombre) { err.textContent = "Escriba su nombre."; err.hidden = false; return $("av-nombre").focus(); }
+  if (!selPais.value) { err.textContent = "Seleccione su país."; err.hidden = false; return selPais.focus(); }
+  respuestas.nombre = nombre;
+  respuestas.pais = selPais.value;
+  guardarBorrador();
+  if (desdeRevision) { desdeRevision = false; return vistaRevision(); }
+  const primera = PREGUNTAS.findIndex((p) => respuestas[p.id] == null);
+  irAPregunta(primera < 0 ? PREGUNTAS.length - 1 : primera, false);
+});
+
+function vistaAviso(revision) {
+  desdeRevision = !!revision;
+  $("av-nombre").value = respuestas.nombre ?? titular.slice(0, NOMBRE_MAX);
+  selPais.value = respuestas.pais ?? paisSugerido();
+  const empezado = PREGUNTAS.some((p) => respuestas[p.id] != null);
+  $("av-iniciar").textContent = revision ? "Guardar" : empezado ? "Continuar formulario" : "Iniciar formulario";
+  mostrar("v-aviso");
+}
+
+// ---------- Preguntas ----------
 function progreso() {
   const cont = $("q-progreso");
   if (!cont.children.length) for (let i = 0; i < PREGUNTAS.length; i++) cont.appendChild(document.createElement("i"));
@@ -383,148 +455,89 @@ function progreso() {
 
 function pintarPregunta() {
   const p = PREGUNTAS[indice];
-  $("q-seccion").textContent = SECCIONES[p.seccion];
-  $("q-num").textContent = `Pregunta ${String(indice + 1).padStart(2, "0")} de ${PREGUNTAS.length}`;
+  $("q-num").textContent = `Pregunta ${indice + 1} de ${PREGUNTAS.length}`;
   $("q-texto").textContent = p.texto;
-  $("q-ayuda").textContent = p.ayuda || "";
-  $("q-ayuda").hidden = !p.ayuda;
-  $("q-error").hidden = true;
-  $("q-atras").style.visibility = indice === 0 && !desdeRevision ? "hidden" : "visible";
   $("q-atras").textContent = desdeRevision ? "← Volver a la revisión" : "← Anterior";
   progreso();
+  const seguir = $("q-seguir");
+  seguir.hidden = respuestas[p.id] == null;
+  seguir.textContent = desdeRevision ? "Guardar" : "Continuar";
 
   const campo = $("q-campo");
   campo.textContent = "";
-  const seguir = $("q-seguir");
-
-  if (p.tipo === "opciones") {
-    seguir.hidden = respuestas[p.id] == null;
-    seguir.textContent = desdeRevision ? "Guardar" : "Continuar";
-    const grupo = document.createElement("div");
-    grupo.className = "opciones";
-    grupo.setAttribute("role", "radiogroup");
-    grupo.setAttribute("aria-labelledby", "q-texto");
-    for (const o of p.opciones) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "opcion";
-      b.setAttribute("role", "radio");
-      b.setAttribute("aria-checked", String(respuestas[p.id] === o.id));
-      b.innerHTML = '<span class="casilla" aria-hidden="true"></span><span></span>';
-      b.lastChild.textContent = o.texto;
-      b.addEventListener("click", () => {
-        respuestas[p.id] = o.id;
-        guardarBorrador();
-        grupo.querySelectorAll(".opcion").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
-        grupo.querySelectorAll(".opcion").forEach((x) => (x.disabled = true));
-        setTimeout(avanzar, reduceMotion ? 60 : 260);
-      });
-      grupo.appendChild(b);
-    }
-    campo.appendChild(grupo);
-  } else {
-    seguir.hidden = false;
-    seguir.textContent = desdeRevision ? "Guardar" : "Continuar";
-    let input;
-    if (p.tipo === "texto") {
-      input = document.createElement("input");
-      input.type = "text";
-      input.maxLength = NOMBRE_MAX;
-      input.autocomplete = "name";
-      input.value = respuestas[p.id] ?? titular.slice(0, NOMBRE_MAX);
-    } else {
-      input = document.createElement("select");
-      const ph = document.createElement("option");
-      ph.value = ""; ph.textContent = "Seleccione su país";
-      input.appendChild(ph);
-      for (const [cod, nombre] of PAISES) {
-        const o = document.createElement("option");
-        o.value = cod; o.textContent = nombre;
-        input.appendChild(o);
-      }
-      input.value = respuestas[p.id] ?? paisSugerido();
-    }
-    input.id = "q-input";
-    input.setAttribute("aria-labelledby", "q-texto");
-    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); confirmarCampo(); } });
-    campo.appendChild(input);
+  const grupo = document.createElement("div");
+  grupo.className = "opciones";
+  grupo.setAttribute("role", "radiogroup");
+  grupo.setAttribute("aria-labelledby", "q-texto");
+  for (const o of p.opciones) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "opcion";
+    b.setAttribute("role", "radio");
+    b.setAttribute("aria-checked", String(respuestas[p.id] === o.id));
+    b.innerHTML = '<span class="casilla" aria-hidden="true"></span><span></span>';
+    b.lastChild.textContent = o.texto;
+    b.addEventListener("click", () => {
+      respuestas[p.id] = o.id;
+      guardarBorrador();
+      grupo.querySelectorAll(".opcion").forEach((x) => { x.setAttribute("aria-checked", String(x === b)); x.disabled = true; });
+      setTimeout(avanzar, reduceMotion ? 60 : 260);
+    });
+    grupo.appendChild(b);
   }
-}
-
-function confirmarCampo() {
-  const p = PREGUNTAS[indice];
-  const input = $("q-input");
-  if (p.tipo === "opciones") { if (respuestas[p.id] != null) avanzar(); return; }
-  const v = input.value.trim().replace(/\s+/g, " ");
-  if (!v) {
-    $("q-error").textContent = p.tipo === "texto" ? "Escriba su nombre." : "Seleccione un país.";
-    $("q-error").hidden = false;
-    input.focus();
-    return;
-  }
-  respuestas[p.id] = v;
-  guardarBorrador();
-  avanzar();
+  campo.appendChild(grupo);
 }
 
 function avanzar() {
   if (desdeRevision || indice >= PREGUNTAS.length - 1) { desdeRevision = false; return vistaRevision(); }
-  indice++;
+  irAPregunta(indice + 1, false);
+}
+
+function irAPregunta(i, revision) {
+  indice = i;
+  desdeRevision = !!revision;
   guardarBorrador();
   pintarPregunta();
   mostrar("v-pregunta", $("q-texto"));
 }
 
-function retroceder() {
+$("q-seguir").addEventListener("click", () => { if (respuestas[PREGUNTAS[indice].id] != null) avanzar(); });
+$("q-atras").addEventListener("click", () => {
   if (desdeRevision) { desdeRevision = false; return vistaRevision(); }
-  if (indice === 0) return;
-  indice--;
-  pintarPregunta();
-  mostrar("v-pregunta", $("q-texto"));
-}
-
-$("q-seguir").addEventListener("click", confirmarCampo);
-$("q-atras").addEventListener("click", retroceder);
-
-function irAPregunta(i, revision) {
-  indice = i;
-  desdeRevision = !!revision;
-  pintarPregunta();
-  mostrar("v-pregunta", $("q-texto"));
-}
+  if (indice === 0) return vistaAviso(false);
+  irAPregunta(indice - 1, false);
+});
 
 // ---------- Revisión ----------
+function fila(lista, dtTexto, ddTexto, etiqueta, accion) {
+  const div = document.createElement("div");
+  const dt = document.createElement("dt"); dt.textContent = dtTexto;
+  const dd = document.createElement("dd"); dd.textContent = ddTexto;
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "enlace-btn"; b.textContent = "Corregir";
+  b.setAttribute("aria-label", `Corregir: ${etiqueta}`);
+  b.addEventListener("click", accion);
+  div.append(dt, dd, b);
+  lista.appendChild(div);
+}
+
 function vistaRevision() {
   const lista = $("rv-lista");
   lista.textContent = "";
-  let seccion = -1;
+  fila(lista, "Solicitante", `${respuestas.nombre} · ${paisPorCodigo(respuestas.pais)?.[1] ?? ""}`, "nombre y país", () => vistaAviso(true));
   PREGUNTAS.forEach((p, i) => {
-    if (p.seccion !== seccion) {
-      seccion = p.seccion;
-      const t = document.createElement("div");
-      t.className = "sec-tit";
-      t.innerHTML = '<span class="label cool"></span>';
-      t.firstChild.textContent = SECCIONES[seccion];
-      lista.appendChild(t);
-    }
-    const fila = document.createElement("div");
-    const dt = document.createElement("dt"); dt.textContent = `${String(i + 1).padStart(2, "0")}. ${p.texto}`;
-    const dd = document.createElement("dd"); dd.textContent = respuestas[p.id] != null ? textoRespuesta(p, respuestas[p.id]) : "Sin responder";
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "enlace-btn"; b.textContent = "Corregir";
-    b.setAttribute("aria-label", `Corregir la pregunta ${i + 1}`);
-    b.addEventListener("click", () => irAPregunta(i, true));
-    fila.append(dt, dd, b);
-    lista.appendChild(fila);
+    fila(lista, `${i + 1}. ${p.texto}`, respuestas[p.id] != null ? textoRespuesta(p, respuestas[p.id]) : "Sin responder",
+      `pregunta ${i + 1}`, () => irAPregunta(i, true));
   });
   $("rv-error").hidden = true;
   $("rv-jura").checked = false;
   $("rv-firmar").disabled = true;
-  mostrar("v-revision", lista.parentElement.querySelector("h2"));
+  mostrar("v-revision", $("rv-titulo"));
 }
 $("rv-jura").addEventListener("change", (e) => { $("rv-firmar").disabled = !e.target.checked; });
 
 $("rv-firmar").addEventListener("click", async () => {
+  if (!respuestas.nombre || !respuestas.pais) return vistaAviso(true);
   const faltante = PREGUNTAS.findIndex((p) => respuestas[p.id] == null);
   if (faltante >= 0) return irAPregunta(faltante, true);
   $("rv-firmar").disabled = true;
@@ -548,16 +561,13 @@ $("rv-firmar").addEventListener("click", async () => {
 });
 
 // ---------- Resultado ----------
-let credencialBlob = null;
-
 async function vistaResultado(res) {
   const R = RESULTADOS[res.categoria];
-  const fecha = new Intl.DateTimeFormat("es-CO", { day: "2-digit", month: "long", year: "numeric", timeZone: "America/Bogota" }).format(new Date(res.radicado_en || Date.now()));
+  const fecha = new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Bogota" }).format(new Date(res.radicado_en || Date.now()));
   $("r-exp").textContent = `Expediente ${res.expediente} · Radicado el ${fecha}`;
   $("r-estado").textContent = R.estado;
   $("r-estado").className = "display r-estado " + (res.categoria === "A" ? "sprout" : res.categoria === "B" ? "cool" : "warm");
   $("r-categoria").textContent = R.categoria;
-  $("r-categoria").className = "r-categoria muted";
 
   const exp = $("r-explicacion");
   exp.textContent = "";
@@ -568,11 +578,17 @@ async function vistaResultado(res) {
   const ul = $("r-anot-lista"); ul.textContent = "";
   for (const t of anot) { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); }
 
+  const texto = `${textoCompartir(res)} ${URL_PUBLICA}`;
+  $("r-copiar").onclick = async () => {
+    try { await navigator.clipboard.writeText(texto); $("r-copiado").hidden = false; }
+    catch (e) { window.prompt("Copia este texto:", texto); }
+  };
+
   mostrar("v-resultado", $("r-estado"));
 
   const canvas = await dibujarCredencial(res);
-  credencialBlob = await new Promise((ok) => canvas.toBlob(ok, "image/png"));
-  const url = URL.createObjectURL(credencialBlob);
+  const blob = await new Promise((ok) => canvas.toBlob(ok, "image/png"));
+  const url = URL.createObjectURL(blob);
   const img = $("r-img");
   img.src = url;
   img.alt = res.categoria === "ESPERA"
@@ -582,13 +598,12 @@ async function vistaResultado(res) {
   desc.href = url;
   desc.download = nombreArchivo(res);
 
-  const archivo = new File([credencialBlob], nombreArchivo(res), { type: "image/png" });
+  const archivo = new File([blob], nombreArchivo(res), { type: "image/png" });
   const puede = !!(navigator.canShare && navigator.canShare({ files: [archivo] }));
   $("r-compartir").hidden = !puede;
   $("r-compartir").onclick = async () => {
-    try {
-      await navigator.share({ files: [archivo], title: "Mi formulario T-14", text: `${textoCompartir(res)} ${URL_PUBLICA}` });
-    } catch (e) { /* la persona canceló */ }
+    try { await navigator.share({ files: [archivo], title: "Mi formulario T-14", text: texto }); }
+    catch (e) { /* la persona canceló */ }
   };
 }
 
@@ -620,13 +635,8 @@ async function iniciar() {
     const b = JSON.parse(leer(claveBorrador()) || "null");
     if (b && b.respuestas) { respuestas = b.respuestas; indice = Math.min(b.indice || 0, PREGUNTAS.length - 1); }
   } catch (e) {}
-
-  $("av-nombre").textContent = titular;
-  $("av-iniciar").textContent = Object.keys(respuestas).length ? "Continuar formulario" : "Iniciar formulario";
-  mostrar("v-aviso");
+  vistaAviso(false);
 }
-
-$("av-iniciar").addEventListener("click", () => { pintarPregunta(); mostrar("v-pregunta", $("q-texto")); });
 
 iniciar();
 </script>

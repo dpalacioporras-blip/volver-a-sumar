@@ -147,8 +147,8 @@ function correoAnuncio(nombre: string, url: string) {
     encabezado: `Tu perímetro será desafectado.<br><span style="color:#E0806C;">Solicita tu reubicación.</span>`,
     cuerpo: P(`Hola${n ? " " + esc(n) : ""}:`) +
       P(`Esta es la segunda entrega para quienes están en el registro de <strong style="color:#F1ECE2;">Volver a sumar</strong>: el <strong style="color:#F1ECE2;">Formulario único de reubicación, modelo T-14</strong>.`) +
-      P("Son catorce preguntas. Según tus respuestas, te asignan a uno de los catorce Centros de Reunión, con una función y un sector, o quedas en lista de espera abierta.") +
-      P("Respóndelo con tus datos reales. Al final recibes tu credencial para compartir en tus historias."),
+      P("Son ocho preguntas sobre lo que harías si tu barrio se quedara sin agua ni luz. Según tus respuestas, te asignan a uno de los catorce Centros de Reunión, con una función y un sector, o quedas en lista de espera abierta.") +
+      P("Al final recibes tu credencial para compartir en tus historias de Instagram. Etiquétame en <strong style=\"color:#F1ECE2;\">@IDanielPanda</strong>: quiero ver a dónde te mandaron."),
     boton: "Llenar mi formulario T-14",
     url,
     nota: "El enlace es personal. La solicitud se radica una sola vez.",
@@ -157,7 +157,7 @@ function correoAnuncio(nombre: string, url: string) {
 
 Esta es la segunda entrega para quienes están en el registro de Volver a sumar: el Formulario único de reubicación, modelo T-14.
 
-Son catorce preguntas. Según tus respuestas, te asignan a uno de los catorce Centros de Reunión, con una función y un sector, o quedas en lista de espera abierta. Al final recibes tu credencial para compartir.
+Son ocho preguntas sobre lo que harías si tu barrio se quedara sin agua ni luz. Según tus respuestas, te asignan a uno de los catorce Centros de Reunión, con una función y un sector, o quedas en lista de espera abierta. Al final recibes tu credencial para compartir en Instagram: etiquétame en @IDanielPanda.
 
 Tu enlace personal: ${url}
 La solicitud se radica una sola vez.
@@ -176,7 +176,7 @@ function correoEnlace(nombre: string, url: string) {
     etiqueta: "Registro de elegibilidad · Formulario T-14",
     encabezado: "Tu expediente está abierto.",
     cuerpo: P(`Hola${n ? " " + esc(n) : ""}:`) +
-      P("Aquí está tu enlace personal al <strong style=\"color:#F1ECE2;\">Formulario único de reubicación, modelo T-14</strong>. Son catorce preguntas y al final recibes tu credencial, o tu constancia si quedas en lista de espera."),
+      P("Aquí está tu enlace personal al <strong style=\"color:#F1ECE2;\">Formulario único de reubicación, modelo T-14</strong>. Son ocho preguntas y al final recibes tu credencial, o tu constancia si quedas en lista de espera."),
     boton: "Abrir mi formulario",
     url,
     nota: "El enlace es personal. La solicitud se radica una sola vez. Si no pediste este enlace, puedes ignorar este correo.",

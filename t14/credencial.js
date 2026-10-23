@@ -322,7 +322,7 @@ export async function dibujarCredencial(res) {
   ctx.fillStyle = C.muted;
   ctx.font = "400 24px 'IBM Plex Sans'";
   ctx.textAlign = "center";
-  ctx.fillText("Volver a sumar · novela de Daniel Palacio P.", W / 2, 1742);
+  ctx.fillText("Volver a sumar, de Daniel Palacio P. · @IDanielPanda", W / 2, 1742);
   ctx.textAlign = "left";
 
   return canvas;
