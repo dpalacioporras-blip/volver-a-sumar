@@ -9,6 +9,8 @@ const SENDER_EMAIL = Deno.env.get("SENDER_EMAIL") ?? "tvpandemonium@gmail.com";
 const SENDER_NAME = Deno.env.get("SENDER_NAME") ?? "Daniel Palacio P. · Volver a sumar";
 const SITE = Deno.env.get("SITE_URL") ?? "https://volver-a-sumar.vercel.app";
 const CONTACTO = "tvpandemonium@gmail.com";
+// Segunda entrega: enlace personal al formulario T-14 (/t14) dentro de la bienvenida.
+const T14_SITE = Deno.env.get("T14_SITE_URL") ?? "https://volverasumar.pandemoniumpodcast.com";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -20,7 +22,7 @@ function primerNombre(nombre: string) {
   return nombre.trim().split(/\s+/)[0] ?? "";
 }
 
-export function correoHtml(nombre: string, site: string) {
+export function correoHtml(nombre: string, site: string, t14: string) {
   const n = esc(primerNombre(nombre));
   const pdf = `${site}/descargas/volver-a-sumar-capitulo-1.pdf`;
   return `<!doctype html>
@@ -50,6 +52,15 @@ export function correoHtml(nombre: string, site: string) {
       <p style="margin:0;">Y con tu compra recibes gratis el cómic <em>La Decisión</em>.</p>
     </td>
   </tr></table>
+  <div style="margin:30px 0 0;padding:24px 0 0;border-top:1px solid #3A3F5C;">
+    <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#4FA3C7;">Segunda entrega · Formulario T-14</p>
+    <p style="margin:0 0 12px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:19px;line-height:1.2;text-transform:uppercase;color:#F1ECE2;">Tu perímetro será desafectado.</p>
+    <p style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;color:#D3D1D9;">Llena el formulario de reubicación: ocho preguntas sobre lo que harías deciden si te asignan a un Centro de Reunión o quedas en lista de espera abierta. Al final recibes tu credencial para compartir en Instagram. Etiquétame en <strong style="color:#F1ECE2;">@IDanielPanda</strong>.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border:1px solid #F1ECE2;border-radius:6px;">
+      <a href="${t14}" style="display:inline-block;padding:14px 24px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:#F1ECE2;text-decoration:none;">Llenar mi formulario T-14 &rarr;</a>
+    </td></tr></table>
+    <p style="margin:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#A9AEC4;">El enlace es personal. La solicitud se radica una sola vez.</p>
+  </div>
   <p style="margin:30px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;color:#F1ECE2;">Daniel Palacio P.</p>
 </td></tr>
 <tr><td style="padding:24px 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#A9AEC4;">
@@ -60,7 +71,7 @@ export function correoHtml(nombre: string, site: string) {
 </table></td></tr></table></body></html>`;
 }
 
-function correoTexto(nombre: string, site: string) {
+function correoTexto(nombre: string, site: string, t14: string) {
   const n = primerNombre(nombre);
   return `Hola${n ? " " + n : ""}:
 
@@ -68,6 +79,9 @@ Tu registro de elegibilidad quedó completado. Aquí está el Capítulo 1 de Vol
 ${site}/descargas/volver-a-sumar-capitulo-1.pdf
 
 Cuando la novela salga a la venta, te escribiremos con el precio de lanzamiento. Y con tu compra recibes gratis el cómic La Decisión.
+
+Segunda entrega: llena tu formulario de reubicación T-14. Ocho preguntas deciden si te asignan a un Centro de Reunión o quedas en lista de espera abierta. Al final recibes tu credencial para compartir en Instagram (etiquétame en @IDanielPanda).
+Tu enlace personal: ${t14}
 
 Daniel Palacio P.
 
@@ -99,7 +113,7 @@ Deno.serve(async (req) => {
 
   // Se lee el registro desde la base: nunca se confía en el correo que venga en la petición.
   const { data: reg, error } = await db.from("registros")
-    .select("id, nombre, correo, bienvenida_enviada_en").eq("id", id).maybeSingle();
+    .select("id, nombre, correo, token, bienvenida_enviada_en").eq("id", id).maybeSingle();
   if (error || !reg) return new Response(JSON.stringify({ error: "Registro no encontrado" }), { status: 404 });
   if (reg.bienvenida_enviada_en) return new Response(JSON.stringify({ ok: true, ya_enviado: true }));
 
@@ -113,14 +127,15 @@ Deno.serve(async (req) => {
   }
   if (!c.ok && c.status !== 204) console.error("Brevo contacto", c.status, c.text);
 
-  // 2. Correo de bienvenida.
+  // 2. Correo de bienvenida (con el Capítulo 1 y el enlace personal al T-14).
+  const t14 = `${T14_SITE}/t14?t=${reg.token}`;
   const m = await brevo("/smtp/email", {
     sender: { email: SENDER_EMAIL, name: SENDER_NAME },
     to: [{ email: reg.correo, name: reg.nombre }],
     replyTo: { email: CONTACTO, name: "Daniel Palacio P." },
-    subject: "Registro completado: tu Capítulo 1 de Volver a sumar",
-    htmlContent: correoHtml(reg.nombre, SITE),
-    textContent: correoTexto(reg.nombre, SITE),
+    subject: "Registro completado: tu Capítulo 1 y tu formulario T-14",
+    htmlContent: correoHtml(reg.nombre, SITE, t14),
+    textContent: correoTexto(reg.nombre, SITE, t14),
     tags: ["volver-a-sumar", "bienvenida"],
   });
   if (!m.ok) {
@@ -128,6 +143,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "No se pudo enviar", status: m.status }), { status: 502 });
   }
 
-  await db.from("registros").update({ bienvenida_enviada_en: new Date().toISOString() }).eq("id", reg.id);
+  // La bienvenida ya lleva el T-14: queda marcado para que el anuncio de la segunda entrega no se repita.
+  const ahora = new Date().toISOString();
+  await db.from("registros").update({ bienvenida_enviada_en: ahora, t14_anuncio_enviado_en: ahora }).eq("id", reg.id);
   return new Response(JSON.stringify({ ok: true }));
 });
