@@ -29,9 +29,9 @@ Para exportar: botón **Export → CSV** en el Table Editor.
 - `descargas/volver-a-sumar-capitulo-1.pdf`: el adelanto que recibe cada persona registrada.
 - `correo/portada.jpg`: portada en JPG para el correo (los clientes de correo no siempre muestran WebP).
 - `supabase/functions/bienvenida/index.ts`: función de Supabase que, cuando entra un registro nuevo,
-  (desde el 28 de octubre la bienvenida incluye también el enlace personal al formulario T-14 y lo marca como anunciado)
   lo agrega a la lista de Brevo y le envía el correo con el enlace al PDF. Marca `bienvenida_enviada_en`
-  para no enviar dos veces.
+  para no enviar dos veces. Desde el 28 de octubre de 2026 la bienvenida incluye también el enlace personal
+  al formulario T-14 y marca `t14_anuncio_enviado_en`, para que el anuncio de la segunda entrega no se repita.
 - Configuración (secretos de la función en Supabase): `BREVO_API_KEY`, `BREVO_LIST_ID`, `SENDER_EMAIL`,
   y opcionales `SENDER_NAME` y `SITE_URL`.
 
