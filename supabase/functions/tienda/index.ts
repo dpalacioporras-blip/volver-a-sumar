@@ -13,9 +13,13 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { type Comprador, marcarEpub, marcarPdf } from "./marca.ts";
 
-const WOMPI_PUBLIC_KEY = Deno.env.get("WOMPI_PUBLIC_KEY") ?? "";
-const WOMPI_INTEGRITY_SECRET = Deno.env.get("WOMPI_INTEGRITY_SECRET") ?? "";
-const WOMPI_EVENTS_SECRET = Deno.env.get("WOMPI_EVENTS_SECRET") ?? "";
+// .trim(): al pegar las llaves en el panel suele colarse un salto de línea.
+const WOMPI_PUBLIC_KEY = (Deno.env.get("WOMPI_PUBLIC_KEY") ?? "").trim();
+const WOMPI_INTEGRITY_SECRET = (Deno.env.get("WOMPI_INTEGRITY_SECRET") ?? "").trim();
+const WOMPI_EVENTS_SECRET = (Deno.env.get("WOMPI_EVENTS_SECRET") ?? "").trim();
+// Diagnóstico sin revelar llaves: solo el tipo de cada una (prefijo conocido) y su largo.
+const tipoLlave = (s: string) => (s.match(/^(pub|prv)_(prod|test)_|^(prod|test)_(integrity|events)_/)?.[0] ?? "desconocido") + ` (${s.length})`;
+console.log("Wompi llaves:", "pública", tipoLlave(WOMPI_PUBLIC_KEY), "· integridad", tipoLlave(WOMPI_INTEGRITY_SECRET), "· eventos", tipoLlave(WOMPI_EVENTS_SECRET));
 const WOMPI_API = WOMPI_PUBLIC_KEY.startsWith("pub_test_") ? "https://sandbox.wompi.co/v1" : "https://production.wompi.co/v1";
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY") ?? "";
 const SENDER_EMAIL = Deno.env.get("SENDER_EMAIL") ?? "tvpandemonium@gmail.com";
@@ -50,6 +54,12 @@ function cabeceras(req: Request) {
     "Vary": "Origin",
     "Content-Type": "application/json; charset=utf-8",
   };
+}
+
+// Sitio desde el que se compra (dominio propio o vista previa de Vercel), para volver allí después de pagar.
+function sitioDe(req: Request) {
+  const origen = req.headers.get("origin") ?? "";
+  return ORIGENES.some((r) => r.test(origen)) ? origen : SITE;
 }
 
 async function sha256(texto: string) {
@@ -238,7 +248,7 @@ async function info(body: Record<string, unknown>) {
   }] as const;
 }
 
-async function crear(body: Record<string, unknown>) {
+async function crear(req: Request, body: Record<string, unknown>) {
   if (!WOMPI_PUBLIC_KEY || !WOMPI_INTEGRITY_SECRET) return [500, { ok: false, error: "Falta configurar Wompi" }] as const;
   const cfg = await config();
   if (!cfg.abierta) return [403, { ok: false, error: "cerrada" }] as const;
@@ -268,7 +278,7 @@ async function crear(body: Record<string, unknown>) {
     "amount-in-cents": String(monto),
     reference: referencia,
     "signature:integrity": firma,
-    "redirect-url": `${SITE}/comprar/gracias`,
+    "redirect-url": `${sitioDe(req)}/comprar/gracias`,
     "customer-data:email": correo,
     "customer-data:full-name": nombre,
   });
@@ -403,7 +413,7 @@ Deno.serve(async (req) => {
     if (typeof body.event === "string") r = await evento(req, body);
     else switch (body.accion) {
       case "info": r = await info(body); break;
-      case "crear": r = await crear(body); break;
+      case "crear": r = await crear(req, body); break;
       case "estado": r = await estado(body); break;
       case "descargas": r = await descargas(body); break;
       default: r = [400, { ok: false, error: "accion" }];
