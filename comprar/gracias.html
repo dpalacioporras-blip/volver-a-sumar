@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tu compra · Volver a sumar</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1F2235">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231F2235'/%3E%3Cpath d='M16 6a10 10 0 0 0 0 20z' fill='%23E0806C'/%3E%3Cpath d='M16 6a10 10 0 0 1 0 20z' fill='%234FA3C7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Saira:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/tienda.css">
+</head>
+<body>
+
+<div class="top-hero">
+<header class="top wrap">
+<a class="brand" href="/">Volver a <b>Sumar</b></a>
+<div class="label cool">Tienda oficial</div>
+</header>
+</div>
+
+<main class="wrap angosto">
+<div class="panel" aria-live="polite">
+<div class="label muted" id="g-pedido">Pedido</div>
+
+<div id="g-verificando">
+<h1 class="display" style="font-size:clamp(24px,4.6vw,34px);line-height:1.1">Confirmando tu pago…</h1>
+<p class="soft" style="margin-top:12px">Esto toma unos segundos. No cierres esta página.</p>
+</div>
+
+<div id="g-aprobado" hidden>
+<h1 class="display sprout" style="font-size:clamp(24px,4.6vw,34px);line-height:1.1">Pago aprobado.<br><span style="color:var(--text)">Gracias por volver a sumar.</span></h1>
+<p class="soft" style="margin-top:14px">Te enviamos los enlaces de descarga a <strong id="g-correo" style="color:var(--text)"></strong>. También puedes descargar ya:</p>
+<p style="margin-top:18px"><a class="btn" id="g-descargas" href="#">Ir a mis descargas</a></p>
+</div>
+
+<div id="g-pendiente" hidden>
+<h1 class="display" style="font-size:clamp(24px,4.6vw,34px);line-height:1.1">Tu pago está en proceso.</h1>
+<p class="soft" style="margin-top:12px">Algunos medios, como PSE, tardan unos minutos en confirmarse. Apenas Wompi lo apruebe, te llega un correo con tus enlaces de descarga. Puedes cerrar esta página.</p>
+</div>
+
+<div id="g-rechazado" hidden>
+<h1 class="display warm" style="font-size:clamp(24px,4.6vw,34px);line-height:1.1">El pago no se completó.</h1>
+<p class="soft" style="margin-top:12px">No se hizo ningún cobro. Puedes intentarlo de nuevo con otro medio de pago.</p>
+<p style="margin-top:18px"><a class="btn" href="/comprar">Intentar de nuevo</a></p>
+</div>
+
+<div id="g-desconocido" hidden>
+<h1 class="display" style="font-size:clamp(24px,4.6vw,34px);line-height:1.1">No encontramos tu pedido.</h1>
+<p class="soft" style="margin-top:12px">Si ya pagaste, revisa tu correo (también spam y promociones): ahí te llegan los enlaces. Si no te llegan en unos minutos, escríbenos a <a href="mailto:tvpandemonium@gmail.com">tvpandemonium@gmail.com</a>.</p>
+</div>
+</div>
+</main>
+
+<footer class="wrap">
+<div>© 2026 Daniel Palacio P. · <em>Volver a sumar</em></div>
+<div><a href="mailto:tvpandemonium@gmail.com">tvpandemonium@gmail.com</a> · <a href="/terminos">Términos de compra</a></div>
+</footer>
+
+<script>
+(function () {
+  var API = 'https://jcsdruohnwkfsonesonx.supabase.co/functions/v1/tienda';
+  var $ = function (id) { return document.getElementById(id); };
+  var params = new URLSearchParams(location.search);
+  var id = params.get('id');
+  var ref = null;
+  try { ref = localStorage.getItem('vas_pedido'); } catch (e) {}
+  var intentos = 0;
+
+  function mostrar(cual) {
+    ['g-verificando', 'g-aprobado', 'g-pendiente', 'g-rechazado', 'g-desconocido'].forEach(function (x) { $(x).hidden = x !== cual; });
+  }
+
+  function consultar() {
+    intentos++;
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ accion: 'estado', id: id, referencia: ref }) })
+      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (!r.ok) {
+          if (intentos < 4) return setTimeout(consultar, 3000);
+          return mostrar('g-desconocido');
+        }
+        $('g-pedido').textContent = 'Pedido ' + r.referencia;
+        if (r.estado === 'APPROVED') {
+          $('g-correo').textContent = r.correo;
+          $('g-descargas').href = r.descargas;
+          mostrar('g-aprobado');
+          try { localStorage.removeItem('vas_pedido'); } catch (e) {}
+        } else if (r.estado === 'PENDIENTE') {
+          if (intentos < 20) setTimeout(consultar, 4000);
+          else mostrar('g-pendiente');
+        } else {
+          mostrar('g-rechazado');
+        }
+      })
+      .catch(function () { if (intentos < 6) setTimeout(consultar, 4000); else mostrar('g-pendiente'); });
+  }
+
+  if (!id && !ref) mostrar('g-desconocido'); else consultar();
+})();
+</script>
+</body>
+</html>

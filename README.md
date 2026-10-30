@@ -70,3 +70,24 @@ select status_code, content from net._http_response order by id desc limit 1;
 ```
 
 Los correos `@example.com` no tocan Brevo: sirven para probar.
+
+## Tienda (`/comprar`)
+
+Venta del ebook con Wompi. Páginas: `comprar/index.html` (/comprar), `comprar/gracias.html` (regreso de Wompi),
+`descargas.html` (/descargas?d=…), `terminos.html` y `tienda.css`. Función de Supabase `tienda` (sin verificación JWT).
+
+- Precios y fechas en la tabla `tienda_config` (`precio_normal`, `precio_lanzamiento`, `apertura`, `lanzamiento_hasta`,
+  `limite_descargas`). Se cambian desde el editor SQL, sin publicar nada:
+  `update public.tienda_config set valor = '30000' where clave = 'precio_normal';`
+- Precio de lanzamiento: si el correo del comprador está en `registros` (o llega con su enlace personal `?t=`).
+- Pedidos en la tabla `ventas`. Wompi avisa a `https://jcsdruohnwkfsonesonx.supabase.co/functions/v1/tienda`
+  (evento firmado) y la página de regreso también consulta la transacción. Al aprobarse, sale el correo con el enlace de descargas.
+- Archivos: Storage → `libro/originales/volver-a-sumar.epub` y `.pdf`. Cada comprador recibe copias marcadas con su nombre,
+  correo y pedido (`libro/personalizados/<pedido>/`), generadas en la primera descarga.
+- Secretos de la función: `WOMPI_PUBLIC_KEY`, `WOMPI_INTEGRITY_SECRET`, `WOMPI_EVENTS_SECRET` (con llaves `pub_test_` usa el sandbox de Wompi).
+
+Ventas aprobadas:
+```sql
+select referencia, nombre, correo, monto_centavos / 100 as pesos, tipo_precio, metodo, aprobado_en
+from public.ventas where estado = 'APPROVED' order by aprobado_en desc;
+```

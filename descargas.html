@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis descargas · Volver a sumar</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#1F2235">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231F2235'/%3E%3Cpath d='M16 6a10 10 0 0 0 0 20z' fill='%23E0806C'/%3E%3Cpath d='M16 6a10 10 0 0 1 0 20z' fill='%234FA3C7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Saira:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/tienda.css">
+<style>
+.archivos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.archivos li{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between;padding:16px 0;border-top:1px solid var(--line)}
+.archivos .nombre{font-weight:600}
+.archivos .quedan{font-size:14px;color:var(--muted)}
+.archivos .btn{min-height:48px;padding:0 22px;font-size:13px}
+.ayuda{display:flex;flex-direction:column;gap:10px;color:var(--soft);font-size:15px}
+.ayuda strong{color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="top-hero">
+<header class="top wrap">
+<a class="brand" href="/">Volver a <b>Sumar</b></a>
+<div class="label cool">Mis descargas</div>
+</header>
+</div>
+
+<main class="wrap angosto">
+<div class="panel">
+<p class="note" id="d-cargando">Cargando tu ejemplar…</p>
+
+<div id="d-lista" hidden>
+<div class="label muted" id="d-pedido"></div>
+<h1 class="display" style="font-size:clamp(24px,4.6vw,34px);line-height:1.1;margin:10px 0 18px">Tu ejemplar de <span class="sprout">Volver a sumar</span></h1>
+<ul class="archivos" id="d-archivos"></ul>
+<p class="note" style="margin-top:6px">Cada archivo lleva tu nombre y se puede descargar <span id="d-limite"></span> veces. La primera descarga tarda unos segundos mientras preparamos tu ejemplar.</p>
+</div>
+
+<div id="d-error" hidden>
+<h1 class="display warm" style="font-size:clamp(24px,4.6vw,34px);line-height:1.1">Enlace no válido</h1>
+<p class="soft" style="margin-top:12px">Este enlace de descarga no corresponde a una compra aprobada. Usa el botón del correo de compra o escríbenos a <a href="mailto:tvpandemonium@gmail.com">tvpandemonium@gmail.com</a>.</p>
+</div>
+</div>
+
+<div class="ayuda" style="margin-top:28px">
+<div class="label cool">¿Cuál descargo?</div>
+<p><strong>Kindle:</strong> descarga el EPUB y envíalo con la app o la página "Send to Kindle" de Amazon. Aparece en tu Kindle en unos minutos.</p>
+<p><strong>Celular o tablet:</strong> el EPUB se abre en Apple Books, Google Play Libros o cualquier lector de libros electrónicos.</p>
+<p><strong>Computador o para imprimir:</strong> el PDF.</p>
+</div>
+</main>
+
+<footer class="wrap">
+<div>© 2026 Daniel Palacio P. · <em>Volver a sumar</em> · <a href="https://www.instagram.com/idanielpanda/" target="_blank" rel="noopener">@IDanielPanda</a></div>
+<div><a href="mailto:tvpandemonium@gmail.com">tvpandemonium@gmail.com</a> · <a href="/terminos">Términos de compra</a></div>
+</footer>
+
+<script>
+(function () {
+  var API = 'https://jcsdruohnwkfsonesonx.supabase.co/functions/v1/tienda';
+  var $ = function (id) { return document.getElementById(id); };
+  var d = new URLSearchParams(location.search).get('d');
+  if (!d) { $('d-cargando').hidden = true; $('d-error').hidden = false; return; }
+
+  fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ accion: 'descargas', d: d }) })
+    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      $('d-cargando').hidden = true;
+      if (!r.ok) { $('d-error').hidden = false; return; }
+      $('d-pedido').textContent = 'Pedido ' + r.referencia + ' · ' + r.nombre;
+      $('d-limite').textContent = r.limite;
+      var ul = $('d-archivos');
+      r.archivos.forEach(function (a) {
+        var li = document.createElement('li');
+        var info = document.createElement('div');
+        var n = document.createElement('div'); n.className = 'nombre'; n.textContent = a.titulo;
+        var q = document.createElement('div'); q.className = 'quedan';
+        q.textContent = a.restantes > 0 ? 'Te quedan ' + a.restantes + ' descargas' : 'Ya usaste todas las descargas';
+        info.append(n, q);
+        var b = document.createElement('a');
+        b.className = 'btn' + (a.f === 'epub' ? '' : ' sec');
+        b.textContent = 'Descargar';
+        b.href = API + '?d=' + encodeURIComponent(d) + '&f=' + a.f;
+        b.rel = 'nofollow';
+        if (a.restantes <= 0) b.setAttribute('aria-disabled', 'true');
+        b.addEventListener('click', function () {
+          if (a.restantes <= 0) return;
+          a.restantes--;
+          q.textContent = a.restantes > 0 ? 'Te quedan ' + a.restantes + ' descargas' : 'Ya usaste todas las descargas';
+          b.textContent = 'Preparando…';
+          setTimeout(function () { b.textContent = 'Descargar'; if (a.restantes <= 0) b.setAttribute('aria-disabled', 'true'); }, 6000);
+        });
+        li.append(info, b);
+        ul.appendChild(li);
+      });
+      $('d-lista').hidden = false;
+    })
+    .catch(function () { $('d-cargando').textContent = 'No pudimos cargar tus descargas. Recarga la página en un momento.'; });
+})();
+</script>
+</body>
+</html>
