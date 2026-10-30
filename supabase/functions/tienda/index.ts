@@ -336,6 +336,16 @@ function paginaError(titulo: string, texto: string, status: number) {
   return new Response(html, { status, headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
 
+// Los originales viven en el espacio privado "Originales" (el primer archivo .epub o .pdf que haya);
+// si no está, se buscan en libro/originales/.
+const BUCKET_ORIGINALES = "Originales";
+async function descargarOriginal(ext: string, respaldo: string) {
+  const { data: lista } = await db.storage.from(BUCKET_ORIGINALES).list("", { limit: 100 });
+  const archivo = lista?.find((o) => o.name.toLowerCase().endsWith("." + ext));
+  if (archivo) return await db.storage.from(BUCKET_ORIGINALES).download(archivo.name);
+  return await db.storage.from(BUCKET).download(respaldo);
+}
+
 async function descargar(url: URL) {
   const f = url.searchParams.get("f") as ClaveArchivo | null;
   if (!f || !(f in ARCHIVOS)) return paginaError("Archivo no válido", "Revisa el enlace de tu correo de compra.", 400);
@@ -352,7 +362,7 @@ async function descargar(url: URL) {
   const destino = `personalizados/${v.referencia}/${f}.${ext}`;
   const { data: existentes } = await db.storage.from(BUCKET).list(`personalizados/${v.referencia}`);
   if (!existentes?.some((o) => o.name === `${f}.${ext}`)) {
-    const { data: original, error } = await db.storage.from(BUCKET).download(a.origen);
+    const { data: original, error } = await descargarOriginal(ext, a.origen);
     if (error || !original) {
       console.error("Original no disponible", a.origen, error);
       return paginaError("Archivo en preparación", "Estamos terminando de preparar este archivo. Intenta de nuevo en unos minutos.", 503);
