@@ -42,3 +42,30 @@ revoke all on public.ventas from anon, authenticated;
 insert into storage.buckets (id, name, public)
 values ('libro', 'libro', false)
 on conflict (id) do nothing;
+
+-- Correo de lanzamiento por tandas (2 nov 2026): marca de envío y comando de administración.
+alter table public.registros add column if not exists lanzamiento_enviado_en timestamptz;
+
+-- select public.tienda_admin('lanzar', '{"prueba": "tu@correo.com"}');      -- un solo correo de prueba
+-- select public.tienda_admin('lanzar', '{"limite": 100, "solo_t14": true}'); -- tanda real
+-- select public.tienda_admin('cupo');                                         -- cuántos correos quedan hoy en Brevo
+create or replace function public.tienda_admin(accion text, opciones jsonb default '{}'::jsonb)
+returns bigint language plpgsql security definer set search_path = '' as $$
+declare
+  v_clave text;
+  v_pedido bigint;
+begin
+  select c.valor into v_clave from public.t14_config c where c.clave = 'admin_key';
+  if v_clave is null then
+    raise exception 'Falta la clave admin_key en public.t14_config';
+  end if;
+  select net.http_post(
+    url := 'https://jcsdruohnwkfsonesonx.supabase.co/functions/v1/tienda',
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-t14-admin', v_clave),
+    body := jsonb_build_object('accion', accion) || coalesce(opciones, '{}'::jsonb),
+    timeout_milliseconds := 150000
+  ) into v_pedido;
+  return v_pedido;
+end;
+$$;
+revoke all on function public.tienda_admin(text, jsonb) from public, anon, authenticated;
