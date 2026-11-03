@@ -9,7 +9,7 @@ const SENDER_EMAIL = Deno.env.get("SENDER_EMAIL") ?? "tvpandemonium@gmail.com";
 const SENDER_NAME = Deno.env.get("SENDER_NAME") ?? "Daniel Palacio P. · Volver a sumar";
 const SITE = Deno.env.get("SITE_URL") ?? "https://volver-a-sumar.vercel.app";
 const CONTACTO = "tvpandemonium@gmail.com";
-// Segunda entrega: enlace personal al formulario T-14 (/t14) dentro de la bienvenida.
+// Segunda entrega: enlace personal al formulario T-14 (/t14) dentro de la bienvenida; desde el lanzamiento, también el enlace de compra.
 const T14_SITE = Deno.env.get("T14_SITE_URL") ?? "https://volverasumar.pandemoniumpodcast.com";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -22,7 +22,22 @@ function primerNombre(nombre: string) {
   return nombre.trim().split(/\s+/)[0] ?? "";
 }
 
-export function correoHtml(nombre: string, site: string, t14: string) {
+// La novela ya está a la venta: la bienvenida lleva el enlace de compra y, mientras dure, el precio de inscrito.
+export type Oferta = { url: string; precio: number; normal: number; hasta: string; vigente: boolean };
+const pesos = (n: number) => "$" + n.toLocaleString("es-CO").replace(/,/g, ".");
+const dia = (iso: string) =>
+  new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "long", timeZone: "America/Bogota" }).format(new Date(iso));
+
+async function oferta(token: string): Promise<Oferta> {
+  const { data } = await db.from("tienda_config").select("clave, valor");
+  const c = Object.fromEntries((data ?? []).map((r) => [r.clave, r.valor]));
+  const normal = Number(c.precio_normal) || 35000;
+  const hasta = String(c.lanzamiento_hasta ?? "");
+  const vigente = !!hasta && Date.now() <= new Date(hasta).getTime();
+  return { url: `${T14_SITE}/comprar?t=${token}`, precio: vigente ? Number(c.precio_lanzamiento) || normal : normal, normal, hasta, vigente };
+}
+
+export function correoHtml(nombre: string, site: string, t14: string, o: Oferta) {
   const n = esc(primerNombre(nombre));
   const pdf = `${site}/descargas/volver-a-sumar-capitulo-1.pdf`;
   return `<!doctype html>
@@ -30,7 +45,7 @@ export function correoHtml(nombre: string, site: string, t14: string) {
 <meta name="color-scheme" content="dark light"><meta name="supported-color-schemes" content="dark light">
 <title>Tu Capítulo 1 de Volver a sumar</title></head>
 <body style="margin:0;padding:0;background:#1F2235;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Jacobo encontró una raíz. Empieza a leer antes que nadie.</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Jacobo encontró una raíz. Tu Capítulo 1, y la novela completa ya a la venta.</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1F2235;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
@@ -41,17 +56,24 @@ export function correoHtml(nombre: string, site: string, t14: string) {
   </p>
   <h1 style="margin:0 0 22px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:26px;line-height:1.15;text-transform:uppercase;color:#F1ECE2;">Registro completado.<br><span style="color:#7FC4B4;">Eres elegible.</span></h1>
   <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.6;color:#D3D1D9;">Hola${n ? " " + n : ""}:</p>
-  <p style="margin:0 0 28px;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.6;color:#D3D1D9;">Tu registro quedó completado. Aquí está el <strong style="color:#F1ECE2;">Capítulo 1 de Volver a sumar</strong>, para que empieces a leer antes de que la novela salga a la venta.</p>
+  <p style="margin:0 0 28px;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.6;color:#D3D1D9;">Tu registro quedó completado. Aquí está el <strong style="color:#F1ECE2;">Capítulo 1 de Volver a sumar</strong>, para que empieces a leer ya mismo.</p>
   <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 30px;"><tr><td style="background:#E0806C;border-radius:6px;">
     <a href="${pdf}" style="display:inline-block;padding:16px 28px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:#1F2235;text-decoration:none;">Leer el Capítulo 1 &rarr;</a>
   </td></tr></table>
+  <div style="margin:0;padding:24px 0 0;border-top:1px solid #3A3F5C;">
+  <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#E0806C;">Ya a la venta · EPUB y PDF</p>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-    <td width="150" valign="top" style="padding-right:22px;"><a href="${pdf}"><img src="${site}/correo/portada.jpg" width="150" alt="Portada de Volver a sumar" style="display:block;width:150px;height:auto;border-radius:4px;border:0;"></a></td>
+    <td width="120" valign="top" style="padding-right:20px;"><a href="${o.url}"><img src="${site}/correo/portada.jpg" width="120" alt="Portada de Volver a sumar" style="display:block;width:120px;height:auto;border-radius:4px;border:0;"></a></td>
     <td valign="top" style="font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.6;color:#D3D1D9;">
-      <p style="margin:0 0 12px;">Cuando la novela salga a la venta, te escribiremos con el <strong style="color:#F1ECE2;">precio de lanzamiento</strong>, solo para quienes están en el registro.</p>
-      <p style="margin:0;">Y con tu compra recibes gratis el cómic <em>La Decisión</em>.</p>
+      <p style="margin:0 0 16px;">${o.vigente
+        ? `La novela completa ya salió. Por estar en el registro, tu precio es <strong style="color:#F1ECE2;">${pesos(o.precio)}</strong> en lugar de ${pesos(o.normal)}, hasta el <strong style="color:#F1ECE2;">${dia(o.hasta)}</strong>. Compra con este mismo correo para que se aplique.`
+        : `La novela completa ya salió, en EPUB y PDF, por <strong style="color:#F1ECE2;">${pesos(o.precio)}</strong>. Cada ejemplar lleva el nombre de quien lo compra.`}</p>
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#E0806C;border-radius:6px;">
+        <a href="${o.url}" style="display:inline-block;padding:13px 22px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#1F2235;text-decoration:none;">${o.vigente ? "Comprar con mi precio" : "Comprar el libro"} &rarr;</a>
+      </td></tr></table>
     </td>
   </tr></table>
+  </div>
   <div style="margin:30px 0 0;padding:24px 0 0;border-top:1px solid #3A3F5C;">
     <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#4FA3C7;">Segunda entrega · Formulario T-14</p>
     <p style="margin:0 0 12px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:19px;line-height:1.2;text-transform:uppercase;color:#F1ECE2;">Tu perímetro será desafectado.</p>
@@ -71,14 +93,17 @@ export function correoHtml(nombre: string, site: string, t14: string) {
 </table></td></tr></table></body></html>`;
 }
 
-function correoTexto(nombre: string, site: string, t14: string) {
+function correoTexto(nombre: string, site: string, t14: string, o: Oferta) {
   const n = primerNombre(nombre);
   return `Hola${n ? " " + n : ""}:
 
 Tu registro de elegibilidad quedó completado. Aquí está el Capítulo 1 de Volver a sumar:
 ${site}/descargas/volver-a-sumar-capitulo-1.pdf
 
-Cuando la novela salga a la venta, te escribiremos con el precio de lanzamiento. Y con tu compra recibes gratis el cómic La Decisión.
+${o.vigente
+  ? `La novela completa ya está a la venta, en EPUB y PDF. Por estar en el registro, tu precio es ${pesos(o.precio)} en lugar de ${pesos(o.normal)}, hasta el ${dia(o.hasta)}. Compra con este mismo correo:`
+  : `La novela completa ya está a la venta, en EPUB y PDF, por ${pesos(o.precio)}:`}
+${o.url}
 
 Segunda entrega: llena tu formulario de reubicación T-14. Ocho preguntas deciden si te asignan a un Centro de Reunión o quedas en lista de espera abierta. Al final recibes tu credencial para compartir en Instagram (etiquétame en @IDanielPanda).
 Tu enlace personal: ${t14}
@@ -129,13 +154,14 @@ Deno.serve(async (req) => {
 
   // 2. Correo de bienvenida (con el Capítulo 1 y el enlace personal al T-14).
   const t14 = `${T14_SITE}/t14?t=${reg.token}`;
+  const o = await oferta(reg.token);
   const m = await brevo("/smtp/email", {
     sender: { email: SENDER_EMAIL, name: SENDER_NAME },
     to: [{ email: reg.correo, name: reg.nombre }],
     replyTo: { email: CONTACTO, name: "Daniel Palacio P." },
-    subject: "Registro completado: tu Capítulo 1 y tu formulario T-14",
-    htmlContent: correoHtml(reg.nombre, SITE, t14),
-    textContent: correoTexto(reg.nombre, SITE, t14),
+    subject: o.vigente ? "Registro completado: tu Capítulo 1 y tu precio de inscrito" : "Registro completado: tu Capítulo 1 y tu formulario T-14",
+    htmlContent: correoHtml(reg.nombre, SITE, t14, o),
+    textContent: correoTexto(reg.nombre, SITE, t14, o),
     tags: ["volver-a-sumar", "bienvenida"],
   });
   if (!m.ok) {
@@ -143,8 +169,8 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "No se pudo enviar", status: m.status }), { status: 502 });
   }
 
-  // La bienvenida ya lleva el T-14: queda marcado para que el anuncio de la segunda entrega no se repita.
+  // La bienvenida ya lleva el T-14 y el lanzamiento: quedan marcados para que esos correos no se repitan.
   const ahora = new Date().toISOString();
-  await db.from("registros").update({ bienvenida_enviada_en: ahora, t14_anuncio_enviado_en: ahora }).eq("id", reg.id);
+  await db.from("registros").update({ bienvenida_enviada_en: ahora, t14_anuncio_enviado_en: ahora, lanzamiento_enviado_en: ahora }).eq("id", reg.id);
   return new Response(JSON.stringify({ ok: true }));
 });
