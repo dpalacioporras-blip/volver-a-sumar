@@ -69,3 +69,8 @@ begin
 end;
 $$;
 revoke all on function public.tienda_admin(text, jsonb) from public, anon, authenticated;
+
+-- Aviso de reemplazo de ejemplar (9 nov 2026): edición corregida subida a "Originales".
+-- select public.tienda_admin('reemplazo', '{"prueba": "tu@correo.com"}');  -- un solo correo de prueba
+-- select public.tienda_admin('reemplazo');                                  -- todas las compras aprobadas sin aviso
+alter table public.ventas add column if not exists reemplazo_enviado_en timestamptz;

@@ -13,6 +13,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { type Comprador, marcarEpub, marcarPdf } from "./marca.ts";
 import { cupoBrevo, lanzar } from "./lanzamiento.ts";
+import { reemplazar } from "./reemplazo.ts";
 
 // .trim(): al pegar las llaves en el panel suele colarse un salto de línea.
 const WOMPI_PUBLIC_KEY = (Deno.env.get("WOMPI_PUBLIC_KEY") ?? "").trim();
@@ -416,6 +417,9 @@ async function administrar(req: Request, body: Record<string, unknown>) {
   if (!(await esAdmin(req))) return [403, { ok: false }] as const;
   if (body.accion === "cupo") return [200, { ok: true, cupo_brevo: await cupoBrevo(BREVO_API_KEY) }] as const;
   const cfg = await config();
+  if (body.accion === "reemplazo") {
+    return await reemplazar(body, { db, site: SITE, contacto: CONTACTO, limite: cfg.limite, enviar: enviarCorreo });
+  }
   return await lanzar(body, {
     db, site: SITE, contacto: CONTACTO, brevoKey: BREVO_API_KEY, enviar: enviarCorreo,
     precioNormal: cfg.precioNormal, precioLanzamiento: cfg.precioLanzamiento, lanzamientoHasta: cfg.lanzamientoHasta,
@@ -448,6 +452,7 @@ Deno.serve(async (req) => {
       case "estado": r = await estado(body); break;
       case "descargas": r = await descargas(body); break;
       case "lanzar":
+      case "reemplazo":
       case "cupo": r = await administrar(req, body); break;
       default: r = [400, { ok: false, error: "accion" }];
     }
