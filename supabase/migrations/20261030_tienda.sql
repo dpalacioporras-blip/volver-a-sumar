@@ -74,3 +74,9 @@ revoke all on function public.tienda_admin(text, jsonb) from public, anon, authe
 -- select public.tienda_admin('reemplazo', '{"prueba": "tu@correo.com"}');  -- un solo correo de prueba
 -- select public.tienda_admin('reemplazo');                                  -- todas las compras aprobadas sin aviso
 alter table public.ventas add column if not exists reemplazo_enviado_en timestamptz;
+
+-- Correo del tráiler (9 nov 2026) para inscritos sin compra.
+-- select public.tienda_admin('trailer', '{"prueba": "tu@correo.com"}');                       -- prueba normal
+-- select public.tienda_admin('trailer', '{"prueba": "tu@correo.com", "con_intento": true}');  -- prueba con la línea de reintento
+-- select public.tienda_admin('trailer');                                                       -- todos los inscritos sin compra
+alter table public.registros add column if not exists trailer_enviado_en timestamptz;
