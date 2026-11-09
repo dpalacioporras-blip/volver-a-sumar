@@ -347,13 +347,21 @@ function paginaError(titulo: string, texto: string, status: number) {
   return new Response(html, { status, headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
 
-// Los originales viven en el espacio privado "Originales" (el primer archivo .epub o .pdf que haya);
-// si no está, se buscan en libro/originales/.
+// Los originales viven en el espacio privado "Originales": se usa el .epub o .pdf subido más recientemente,
+// así una edición corregida reemplaza a la anterior con solo subirla. Si no hay, se buscan en libro/originales/.
 const BUCKET_ORIGINALES = "Originales";
-async function descargarOriginal(ext: string, respaldo: string) {
+type Archivo = { name: string; updated_at?: string | null; created_at?: string | null };
+const fechaDe = (o: Archivo) => new Date(o.updated_at ?? o.created_at ?? 0).getTime();
+
+async function originalVigente(ext: string) {
   const { data: lista } = await db.storage.from(BUCKET_ORIGINALES).list("", { limit: 100 });
-  const archivo = lista?.find((o) => o.name.toLowerCase().endsWith("." + ext));
-  if (archivo) return await db.storage.from(BUCKET_ORIGINALES).download(archivo.name);
+  return ((lista ?? []) as Archivo[])
+    .filter((o) => o.name.toLowerCase().endsWith("." + ext))
+    .sort((a, b) => fechaDe(b) - fechaDe(a))[0] ?? null;
+}
+
+async function descargarOriginal(original: Archivo | null, respaldo: string) {
+  if (original) return await db.storage.from(BUCKET_ORIGINALES).download(original.name);
   return await db.storage.from(BUCKET).download(respaldo);
 }
 
@@ -372,8 +380,11 @@ async function descargar(url: URL) {
   const ext = a.marca === "epub" ? "epub" : "pdf";
   const destino = `personalizados/${v.referencia}/${f}.${ext}`;
   const { data: existentes } = await db.storage.from(BUCKET).list(`personalizados/${v.referencia}`);
-  if (!existentes?.some((o) => o.name === `${f}.${ext}`)) {
-    const { data: original, error } = await descargarOriginal(ext, a.origen);
+  const previo = (existentes as Archivo[] | null)?.find((o) => o.name === `${f}.${ext}`);
+  const fuente = await originalVigente(ext);
+  // Un ejemplar marcado antes de que se subiera la edición vigente se vuelve a generar.
+  if (!previo || (fuente && fechaDe(previo) < fechaDe(fuente))) {
+    const { data: original, error } = await descargarOriginal(fuente, a.origen);
     if (error || !original) {
       console.error("Original no disponible", a.origen, error);
       return paginaError("Archivo en preparación", "Estamos terminando de preparar este archivo. Intenta de nuevo en unos minutos.", 503);
