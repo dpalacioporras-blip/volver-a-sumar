@@ -15,6 +15,7 @@ import { type Comprador, marcarEpub, marcarPdf } from "./marca.ts";
 import { cupoBrevo, lanzar } from "./lanzamiento.ts";
 import { reemplazar } from "./reemplazo.ts";
 import { trailer } from "./trailer.ts";
+import { comic } from "./comic.ts";
 
 // .trim(): al pegar las llaves en el panel suele colarse un salto de línea.
 const WOMPI_PUBLIC_KEY = (Deno.env.get("WOMPI_PUBLIC_KEY") ?? "").trim();
@@ -33,9 +34,13 @@ const BUCKET = "libro";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
+// El cómic La Decisión (17 nov 2026) también vive en "Originales": se reconoce por su nombre y se entrega
+// tal cual (35 MB de imágenes: marcarlo en la función sería lento), sin confundirlo con el PDF de la novela.
+const ES_COMIC = /decisi/i;
 const ARCHIVOS = {
-  epub: { origen: "originales/volver-a-sumar.epub", nombre: "Volver a sumar - Daniel Palacio P.epub", titulo: "Novela · EPUB", marca: "epub" },
-  pdf: { origen: "originales/volver-a-sumar.pdf", nombre: "Volver a sumar - Daniel Palacio P.pdf", titulo: "Novela · PDF", marca: "pdf" },
+  epub: { origen: "originales/volver-a-sumar.epub", nombre: "Volver a sumar - Daniel Palacio P.epub", titulo: "Novela · EPUB", marca: "epub", comic: false },
+  pdf: { origen: "originales/volver-a-sumar.pdf", nombre: "Volver a sumar - Daniel Palacio P.pdf", titulo: "Novela · PDF", marca: "pdf", comic: false },
+  comic: { origen: "originales/la-decision.pdf", nombre: "La Decisión - Capítulo 1.pdf", titulo: "Cómic La Decisión · Capítulo 1 · PDF", marca: "pdf", comic: true },
 } as const;
 type ClaveArchivo = keyof typeof ARCHIVOS;
 
@@ -148,12 +153,12 @@ function correoCompra(v: { nombre: string; referencia: string; token_descarga: s
 <tr><td style="background:#282C44;border:1px solid #3A3F5C;border-radius:8px;padding:36px 32px;">
   <h1 style="margin:0 0 22px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:26px;line-height:1.15;text-transform:uppercase;color:#F1ECE2;">Gracias por<br><span style="color:#7FC4B4;">volver a sumar.</span></h1>
   ${P(`Hola${n ? " " + n : ""}:`)}
-  ${P(`Tu pago de <strong style="color:#F1ECE2;">${pesos(v.monto_centavos / 100)}</strong> quedó aprobado. Aquí tienes <strong style="color:#F1ECE2;">Volver a sumar</strong> en EPUB y PDF. Muy pronto te escribo con la sorpresa del cómic <em>La Decisión</em>, solo para quienes compraron.`)}
+  ${P(`Tu pago de <strong style="color:#F1ECE2;">${pesos(v.monto_centavos / 100)}</strong> quedó aprobado. Aquí tienes <strong style="color:#F1ECE2;">Volver a sumar</strong> en EPUB y PDF, y de regalo el primer capítulo del cómic <em>La Decisión</em>.`)}
   <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 24px;"><tr><td style="background:#E0806C;border-radius:6px;">
     <a href="${url}" style="display:inline-block;padding:16px 28px;font-family:Arial Black,Arial,Helvetica,sans-serif;font-weight:900;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:#1F2235;text-decoration:none;">Descargar mi libro &rarr;</a>
   </td></tr></table>
   <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#D3D1D9;"><strong style="color:#F1ECE2;">¿Lees en Kindle?</strong> Descarga el EPUB y envíalo con la app o la página "Send to Kindle" de Amazon.</p>
-  <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#A9AEC4;">Cada archivo se puede descargar ${limite} veces y lleva tu nombre: es tu ejemplar. Guarda este correo.</p>
+  <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#A9AEC4;">Cada archivo se puede descargar ${limite} veces y la novela lleva tu nombre: es tu ejemplar. Guarda este correo.</p>
   <p style="margin:30px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;color:#F1ECE2;">Daniel Palacio P.</p>
 </td></tr>
 <tr><td style="padding:24px 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#A9AEC4;">
@@ -164,12 +169,12 @@ function correoCompra(v: { nombre: string; referencia: string; token_descarga: s
   const texto = `Hola${n ? " " + v.nombre.trim().split(/\s+/)[0] : ""}:
 
 Tu pago de ${pesos(v.monto_centavos / 100)} quedó aprobado (pedido ${v.referencia}).
-Descarga Volver a sumar (EPUB y PDF) aquí:
+Descarga Volver a sumar (EPUB y PDF) y el capítulo 1 del cómic La Decisión aquí:
 
 ${url}
 
 ¿Lees en Kindle? Descarga el EPUB y envíalo con "Send to Kindle" de Amazon.
-Cada archivo se puede descargar ${limite} veces y lleva tu nombre. Guarda este correo.
+Cada archivo se puede descargar ${limite} veces y la novela lleva tu nombre. Guarda este correo.
 
 Daniel Palacio P.
 ¿Algún problema? Escribe a ${CONTACTO}.`;
@@ -355,10 +360,10 @@ const BUCKET_ORIGINALES = "Originales";
 type Archivo = { name: string; updated_at?: string | null; created_at?: string | null };
 const fechaDe = (o: Archivo) => new Date(o.updated_at ?? o.created_at ?? 0).getTime();
 
-async function originalVigente(ext: string) {
+async function originalVigente(ext: string, comic = false) {
   const { data: lista } = await db.storage.from(BUCKET_ORIGINALES).list("", { limit: 100 });
   return ((lista ?? []) as Archivo[])
-    .filter((o) => o.name.toLowerCase().endsWith("." + ext))
+    .filter((o) => o.name.toLowerCase().endsWith("." + ext) && ES_COMIC.test(o.name) === comic)
     .sort((a, b) => fechaDe(b) - fechaDe(a))[0] ?? null;
 }
 
@@ -380,6 +385,14 @@ async function descargar(url: URL) {
 
   const a = ARCHIVOS[f];
   const ext = a.marca === "epub" ? "epub" : "pdf";
+  if (a.comic) {
+    const c = await originalVigente("pdf", true);
+    if (!c) return paginaError("Archivo en preparación", "Estamos terminando de preparar este archivo. Intenta de nuevo en unos minutos.", 503);
+    const { data: firmadoC, error: eC } = await db.storage.from(BUCKET_ORIGINALES).createSignedUrl(c.name, 300, { download: a.nombre });
+    if (eC || !firmadoC) return paginaError("No pudimos preparar tu descarga", "Intenta de nuevo en un minuto.", 500);
+    await db.from("ventas").update({ descargas: { ...(v.descargas ?? {}), [f]: usadas + 1 } }).eq("id", v.id);
+    return new Response(null, { status: 302, headers: { Location: firmadoC.signedUrl, "Cache-Control": "no-store" } });
+  }
   const destino = `personalizados/${v.referencia}/${f}.${ext}`;
   const { data: existentes } = await db.storage.from(BUCKET).list(`personalizados/${v.referencia}`);
   const previo = (existentes as Archivo[] | null)?.find((o) => o.name === `${f}.${ext}`);
@@ -418,6 +431,7 @@ async function administrar(req: Request, body: Record<string, unknown>) {
   if (!(await esAdmin(req))) return [403, { ok: false }] as const;
   if (body.accion === "cupo") return [200, { ok: true, cupo_brevo: await cupoBrevo(BREVO_API_KEY) }] as const;
   const cfg = await config();
+  if (body.accion === "comic") return await comic(body, { db, site: SITE, contacto: CONTACTO, enviar: enviarCorreo });
   if (body.accion === "trailer") {
     return await trailer(body, {
       db, site: SITE, contacto: CONTACTO, enviar: enviarCorreo, precioNormal: cfg.precioNormal,
@@ -461,6 +475,7 @@ Deno.serve(async (req) => {
       case "lanzar":
       case "reemplazo":
       case "trailer":
+      case "comic":
       case "cupo": r = await administrar(req, body); break;
       default: r = [400, { ok: false, error: "accion" }];
     }

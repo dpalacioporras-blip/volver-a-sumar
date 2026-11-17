@@ -80,3 +80,9 @@ alter table public.ventas add column if not exists reemplazo_enviado_en timestam
 -- select public.tienda_admin('trailer', '{"prueba": "tu@correo.com", "con_intento": true}');  -- prueba con la línea de reintento
 -- select public.tienda_admin('trailer');                                                       -- todos los inscritos sin compra
 alter table public.registros add column if not exists trailer_enviado_en timestamptz;
+
+-- Cómic La Decisión (17 nov 2026): tercer archivo en las descargas y correo a quienes compraron.
+-- select public.tienda_admin('comic', '{"prueba": "tu@correo.com"}');                     -- prueba
+-- select public.tienda_admin('comic', '{"prueba": "tu@correo.com", "pendiente": true}');  -- prueba con el recordatorio
+-- select public.tienda_admin('comic');                                                     -- todas las compras aprobadas
+alter table public.ventas add column if not exists comic_enviado_en timestamptz;
